@@ -1,0 +1,27 @@
+# C build
+*.o
+*.out
+*.a
+*.so
+*.exe
+
+# LLVM
+*.ll
+*.bc
+
+# Graphviz
+*.dot
+*.pdf
+*.png
+
+# Logs
+*.log
+
+# VSCode
+.vscode/
+
+# Java
+*.class
+
+# Temporary
+tmp/
