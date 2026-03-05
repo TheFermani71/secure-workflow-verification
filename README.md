@@ -105,34 +105,12 @@ Next steps:
 
 ---
 
-# Repository Structure
-
-secure-workflow-verification
-│
-├── device
-│ ├── crypto.c
-│ ├── crypto.h
-│ ├── int_var.c
-│ ├── int_var.h
-│ ├── trace.c
-│ └── trace.h
-│
-├── extractor
-│
-├── verifier
-│
-└── docs
-
-
----
-
 # Technologies
 
 - C
 - mbedTLS
 - LLVM / Clang
-- Graphviz
-- Petri Net modeling
+- Graphvi- Petri Net modeling
 
 ---
 
