@@ -1,26 +1,18 @@
-Secure Workflow Verification
+Secure Workflow Verification System
 
+Master Thesis Project
 Author: Emanuel Fermani
-Course: Computer Science (Master's Degree)
-University: Università di Camerino (UNICAM)
+Program: Computer Science – Università di Camerino
 
-Project Overview
+Overview
 
-This project implements a secure workflow verification framework designed for embedded systems.
+This project implements a secure workflow verification architecture for embedded systems.
 
-The goal of the system is to verify that a device executes a program according to the original workflow defined by the program source code, preventing manipulation of execution logic or sensor data.
+The goal is to verify that a device executed only the allowed operations defined by the program workflow, even if the device software could be manipulated.
 
-The core idea is to separate:
+The system records the sequence of executed API calls (execution trace) and verifies it against the workflow graph extracted from the program source code.
 
-Program execution (device side)
-
-Execution verification (server side)
-
-During execution, the device generates an execution trace.
-
-This trace is then verified against the workflow graph extracted from the original program source code.
-
-Formally, the system verifies:
+Formally, the system verifies that:
 
 trace ∈ L(G)
 
@@ -30,53 +22,92 @@ trace = sequence of API calls executed by the device
 
 G = workflow graph extracted from the program
 
-If the trace belongs to the workflow graph language, the execution is considered valid.
+If the execution trace follows the allowed transitions of the workflow graph, the execution is accepted.
+
+Otherwise, the system detects a workflow violation.
 
 System Architecture
 
-The system is composed of three main components implemented in different languages.
+The system is composed of three main components.
 
-Embedded Program (C)
+DEVICE (C program)
         ↓
-Secure Runtime APIs
+TRACE GENERATION
         ↓
-Execution Trace Generation
+TRACE FILE
         ↓
-Workflow Extractor (Python)
+WORKFLOW EXTRACTOR (Python)
         ↓
-Workflow Graph (JSON)
+WORKFLOW GRAPH (JSON)
         ↓
-Workflow Verifier (Java)
+WORKFLOW VERIFIER (Java)
         ↓
 TRACE VALID / TRACE INVALID
 
-This architecture separates execution, analysis, and verification.
-
+Each component is implemented in a different language and performs a specific task.
 
 Repository Structure
 secure-workflow-verification
 │
 ├── device
-│   Secure embedded runtime (C)
+│   ├── api.c
+│   ├── api.h
+│   ├── crypto.c
+│   ├── crypto.h
+│   ├── int_var.c
+│   ├── int_var.h
+│   ├── trace.c
+│   └── trace.h
 │
 ├── extractor
-│   Workflow extractor (Python)
+│   ├── workflow_extractor.py
+│   ├── api_ids.py
+│   ├── program.c
+│   └── workflow_graph.json
 │
 ├── verifier-java
-│   Workflow verification engine (Java)
+│   ├── ExecutionTrace.java
+│   ├── TraceParser.java
+│   ├── WorkflowGraph.java
+│   ├── WorkflowLoader.java
+│   ├── Verifier.java
+│   ├── TestVerifier.java
+│   └── trace.txt
 │
 ├── libs
-│   External libraries (json-simple)
+│   └── json-simple library
 │
 ├── docs
-│   Project documentation
+│   └── thesis documentation
 │
 ├── README.md
 └── .gitignore
+Device Side Model
 
-Device Runtime (C)
+The device program uses a micro-library of secure APIs instead of direct operations.
 
-The device runtime implements secure primitives and execution tracing.
+Example APIs:
+
+api_init
+api_assign
+api_add
+api_div
+
+Each API invocation is recorded into an execution trace.
+
+Example trace:
+
+INIT
+ASSIGN
+ASSIGN
+ADD
+DIV
+
+The trace represents the actual execution performed by the device.
+
+Secure Runtime Components
+
+The embedded runtime includes several modules.
 
 Crypto Module
 
@@ -88,72 +119,56 @@ authenticated encryption
 
 random IV generation
 
-secure key initialization
+integrity protection
+
+secure device key storage
 
 int_var Module
 
-Implements a secure integer abstraction.
+Implements a secure integer abstraction used by the runtime.
 
-Variables are stored in encrypted form and contain:
+Each variable internally stores:
 
 value
 
 timestamp
 
-variable identifier
+identifier
 
 The internal structure is serialized and encrypted before storage.
 
 Trace Module
 
-Records the sequence of API calls executed by the device.
+Records the sequence of API calls executed by the program.
 
 Each trace entry contains:
 
-API identifier
-
+api_id
 input variables
-
 output variable
-
 timestamp
 
-The trace can be exported in encrypted form.
+The trace can be exported for verification.
 
-API Module
+Workflow Extraction
 
-Defines the secure operations available to programs.
+The Python extractor analyzes the C program and identifies the sequence of API calls.
 
-Examples:
+Example program:
 
-api_init
-api_assign
-api_add
-api_div
+api_init(a)
+api_assign(a,10)
+api_assign(b,5)
+api_add(a,b,result)
+api_div(result,b,result)
 
-Every API invocation automatically generates a trace entry.
-
-Workflow Extractor (Python)
-
-The extractor analyzes a C program and reconstructs the workflow of API calls.
-
-Steps performed:
-
-Parse the program source code
-
-Detect API calls
-
-Reconstruct the API execution sequence
-
-Generate workflow transitions
-
-Export the workflow graph as JSON
-
-Example workflow:
+Extracted API sequence:
 
 INIT → ASSIGN → ADD → DIV
 
-Generated JSON graph:
+The workflow is converted into a graph representation.
+
+Example JSON graph:
 
 {
   "edges": [
@@ -162,44 +177,28 @@ Generated JSON graph:
     [3,4]
   ]
 }
-Workflow Verifier (Java)
 
-The verifier validates execution traces received from the device.
+This graph defines the allowed transitions between API calls.
 
-Verification pipeline:
+Workflow Verification
 
-trace.txt
-    ↓
-TraceParser
-    ↓
-ExecutionTrace
-    ↓
-Verifier
-    ↓
-TRACE VALID / TRACE INVALID
+The Java verifier validates execution traces against the workflow graph.
 
-WorkflowGraph
+Verification rule:
 
-Represents the workflow graph using an adjacency matrix.
+∀ transitions (prev → next) in trace
+must exist in workflow graph
 
-Each edge represents a valid transition between API calls.
+If the trace respects the graph:
 
-Example:
+TRACE VALID
 
-1 → 2
-2 → 3
-3 → 4
-ExecutionTrace
+Otherwise:
 
-Represents a runtime execution trace as a sequence of API identifiers.
+TRACE INVALID
+Trace Parsing
 
-Example:
-
-[1,2,3,4]
-
-TraceParser
-
-Reads execution traces generated by the device.
+Execution traces generated by the device are stored as text files.
 
 Example trace file:
 
@@ -210,35 +209,23 @@ ADD
 DIV
 END
 
-The parser converts textual API names into numeric identifiers.
+The TraceParser module converts API names into numeric identifiers.
 
-Mapping used:
+Mapping used by the system:
 
 INIT   → 1
 ASSIGN → 2
 ADD    → 3
 DIV    → 4
-Verifier
 
-The verifier checks that every transition in the trace exists in the workflow graph.
+Resulting execution trace:
 
-Algorithm:
+[1,2,3,4]
 
-for each transition (a,b) in trace
+This format is used by the verifier.
 
-    check if edge (a,b) exists in graph
-
-If any transition is invalid, the trace is rejected.
-
-Testing
-
-The verifier includes a test program:
-
-TestVerifier.java
-Valid Trace Example
-
-Trace file:
-
+Example Test
+Valid trace
 TRACE
 INIT
 ASSIGN
@@ -246,17 +233,10 @@ ADD
 DIV
 END
 
-Execution:
-
-java TestVerifier
-
-Output:
+Result:
 
 TRACE VALID
-Invalid Trace Example
-
-Trace file:
-
+Invalid trace
 TRACE
 INIT
 ADD
@@ -264,62 +244,72 @@ ASSIGN
 DIV
 END
 
-Output:
+Result:
 
 TRACE INVALID
 
-This demonstrates that the verifier correctly detects workflow violations.
+The verifier detects that the transition:
 
-Current Implementation Status
+INIT → ADD
+
+is not allowed by the workflow graph.
+
+Technology Stack
+
+The project uses multiple programming languages.
+
+C       → embedded runtime
+Python  → workflow extraction
+Java    → execution verification
+JSON    → workflow graph serialization
+Git     → version control
+
+Development environment:
+
+Ubuntu (WSL)
+Current Status
 
 Currently implemented components:
 
-Secure runtime for embedded devices
+secure runtime for embedded devices
 
-Encrypted computation primitives
+encrypted computation primitives
 
-Execution trace generation
+execution trace generation
 
-Workflow extraction from C programs
+workflow extraction from C programs
 
-Workflow graph serialization (JSON)
+workflow graph generation
 
 Java workflow verifier
 
-Trace parsing from external files
+trace parser module
 
-Positive and negative verification tests
+positive and negative tests
 
+Current pipeline:
+
+trace.txt
+     ↓
+TraceParser
+     ↓
+ExecutionTrace
+     ↓
+Verifier
+     ↓
+TRACE VALID / TRACE INVALID
 Future Work
 
-Planned improvements include:
+Possible extensions include:
 
-encrypted trace transmission
+cryptographic authentication of execution traces
+
+workflow modeling using Petri Nets
 
 automatic workflow extraction using LLVM
 
-support for branching workflows
-
-integration with microcontrollers
+integration with real microcontrollers
 
 remote verification server
 
 runtime attestation mechanisms
-
-Academic Context
-
-This project is developed as part of a Master's Thesis in Computer Science at the University of Camerino (UNICAM).
-
-The research focuses on secure execution verification in embedded systems through:
-
-workflow extraction
-
-encrypted computation
-
-runtime trace verification
-
-Author
-
-Emanuel Fermani
-Master's Degree in Computer Science
-Università di Camerino (UNICAM)
