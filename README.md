@@ -23,58 +23,6 @@ This approach allows detecting:
 
 ---
 
-# System Architecture
-
-The system is composed of three main components:
-
-
-C Program
-│
-▼
-Extractor
-│
-▼
-Workflow Graph
-│
-▼
-Device Runtime
-│
-▼
-Execution Trace
-│
-▼
-Verifier
-│
-▼
-VALID / INVALID
-
-
----
-
-# Repository Structure
-
-
-secure-workflow-verification
-│
-├── device
-│ ├── crypto
-│ ├── int_var
-│ ├── trace
-│ └── api
-│
-├── verifier
-│ ├── verifier.c
-│ └── verifier.h
-│
-├── extractor
-│ ├── workflow_extractor.py
-│ └── api_ids.py
-│
-└── docs
-
-
----
-
 # Implemented Modules
 
 ## Device Runtime
