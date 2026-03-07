@@ -122,14 +122,6 @@ Planned improvements include:
 
 ---
 
-# Author
-
-**Emanuel Fermani**  
-Master's Degree in Computer Science  
-Università di Camerino (UNICAM)
-
----
-
 # Academic Context
 
 This project is developed as part of a **Master's thesis in Computer Science**.
