@@ -261,7 +261,7 @@ The workflow graph now includes temporal information:
     {"from":2,"to":3,"time":2},
     {"from":3,"to":4,"time":3}
   ]
-}
+}```
 
 ---
 
