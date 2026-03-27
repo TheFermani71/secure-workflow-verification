@@ -263,6 +263,8 @@ The workflow graph now includes temporal information:
   ]
 }
 
+---
+
 # 7. Workflow Verification
 
 ## 7.1 Verifier Overview
