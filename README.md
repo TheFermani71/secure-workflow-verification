@@ -254,14 +254,13 @@ INIT → ASSIGN → ADD → DIV
 
 The workflow graph now includes temporal information:
 
-```json
 {
   "edges": [
     {"from":1,"to":2,"time":1},
     {"from":2,"to":3,"time":2},
     {"from":3,"to":4,"time":3}
   ]
-}```
+}
 
 ---
 
