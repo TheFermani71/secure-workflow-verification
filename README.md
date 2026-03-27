@@ -16,6 +16,8 @@ The goal of the system is to verify that a device executes **only the operations
 
 The system records the sequence of executed API calls (**execution trace**) and verifies that it is compatible with the **workflow graph extracted from the original program source code**.
 
+The system has been extended to include **temporal verification**, allowing detection of anomalies in execution timing.
+
 ---
 
 ## 1.2 Motivation
@@ -26,8 +28,12 @@ Embedded systems are frequently exposed to risks such as:
 - unexpected execution paths
 - incorrect API invocations
 - manipulation of computation results
+- execution timing manipulation
 
-The proposed architecture allows detecting such anomalies by verifying that the execution trace follows the **expected workflow model extracted from the program**.
+The proposed architecture allows detecting such anomalies by verifying:
+
+- the correctness of the execution sequence  
+- the consistency of execution timing  
 
 ---
 
@@ -52,49 +58,73 @@ Otherwise, the system detects a **workflow violation**.
 
 ---
 
-## 2.2 Trace Representation
+## 2.2 Temporal Extension
 
-An execution trace represents the **ordered sequence of API calls executed by the device**.
+The verification model has been extended to include **temporal constraints**.
+
+Each transition is defined as:
+
+
+(prev → next, Δt)
+
+
+Where:
+
+- `Δt` represents the expected execution time between two operations  
+
+The system now verifies:
+
+- structural correctness  
+- temporal consistency  
+
+---
+
+## 2.3 Trace Representation
+
+An execution trace represents the **ordered sequence of API calls with timing information**.
 
 Example trace:
 
 
-INIT
-ASSIGN
-ASSIGN
-ADD
-DIV
+INIT 0
+ASSIGN 1
+ADD 2
+DIV 3
 
 
-Each element of the trace corresponds to an API invocation performed during program execution.
+Each element includes:
+
+- API name  
+- time delta from the previous operation  
 
 ---
 
-## 3 Component Responsibilities
+# 3 Component Responsibilities
 
 ### Device Runtime (C)
 
 Responsible for:
 
-- executing the program
-- generating execution traces
-- providing secure computation primitives
+- executing the program  
+- generating execution traces  
+- providing secure computation primitives  
 
 ### Workflow Extractor (Python)
 
 Responsible for:
 
-- analyzing the source code
-- detecting API calls
-- generating the workflow graph
+- analyzing the source code  
+- detecting API calls  
+- generating the workflow graph  
+- assigning temporal weights  
 
 ### Workflow Verifier (Java)
 
 Responsible for:
 
-- loading the workflow graph
-- parsing execution traces
-- verifying the trace against the workflow model
+- loading the workflow graph  
+- parsing execution traces  
+- verifying structural and temporal correctness  
 
 ---
 
@@ -121,17 +151,18 @@ Each API invocation is automatically recorded inside the execution trace.
 
 The trace system records the sequence of API calls executed during runtime.
 
+The trace now includes **temporal information**.
+
 Example trace:
 
 
-INIT
-ASSIGN
-ASSIGN
-ADD
-DIV
+INIT 0
+ASSIGN 1
+ADD 2
+DIV 3
 
 
-The trace represents the **actual execution path followed by the device**.
+This representation captures both execution order and timing.
 
 ---
 
@@ -143,10 +174,10 @@ The crypto module provides **authenticated encryption** using AES-GCM through th
 
 Main features include:
 
-- secure device key storage
-- random IV generation
-- authenticated encryption
-- integrity protection
+- secure device key storage  
+- random IV generation  
+- authenticated encryption  
+- integrity protection  
 
 ---
 
@@ -156,11 +187,11 @@ The `int_var` module implements a **secure integer abstraction**.
 
 Each variable internally stores:
 
-- value
-- timestamp
-- variable identifier
+- value  
+- timestamp  
+- variable identifier  
 
-The internal structure is serialized and **encrypted before storage**.
+The internal structure is serialized and encrypted before storage.
 
 ---
 
@@ -188,19 +219,18 @@ The trace can be exported and used for verification.
 
 The Python extractor analyzes the C program and reconstructs the sequence of API calls.
 
-The extractor performs the following operations:
+The extractor performs:
 
-1. parse the source code
-2. detect API calls
-3. reconstruct the execution sequence
-4. generate workflow transitions
-5. export the workflow graph
+1. parse the source code  
+2. detect API calls  
+3. reconstruct the execution sequence  
+4. generate workflow transitions  
+5. assign temporal weights  
+6. export the workflow graph  
 
 ---
 
 ## 6.2 Example Program
-
-Example program analyzed by the extractor:
 
 
 api_init(a)
@@ -210,11 +240,28 @@ api_add(a,b,result)
 api_div(result,b,result)
 
 
-Extracted workflow:
+---
+
+## 6.3 Extracted Workflow
 
 
 INIT → ASSIGN → ADD → DIV
 
+
+---
+
+## 6.4 Temporal Workflow Graph
+
+The workflow graph now includes temporal information:
+
+```json
+{
+  "edges": [
+    {"from":1,"to":2,"time":1},
+    {"from":2,"to":3,"time":2},
+    {"from":3,"to":4,"time":3}
+  ]
+}
 
 ---
 
@@ -224,18 +271,29 @@ INIT → ASSIGN → ADD → DIV
 
 The Java verifier validates execution traces against the workflow graph extracted from the program source code.
 
-The verification rule is:
+The verification includes:
+
+- transition validation  
+- temporal consistency validation  
+
+---
+
+## 7.2 Verification Rule
+
+The verification algorithm checks:
 
 
-∀ transitions (prev → next) in trace
+∀ transitions (prev → next) in trace:
 must exist in workflow graph
+AND
+observed_time ≈ expected_time
 
 
 ---
 
-## 7.2 Verification Outcome
+## 7.3 Verification Outcome
 
-If the execution trace respects the workflow graph:
+If the execution trace is valid:
 
 
 TRACE VALID
@@ -253,26 +311,24 @@ TRACE INVALID
 
 ## 8.1 Trace File Format
 
-Execution traces are stored in text files generated by the device.
+Execution traces are stored in text files.
 
-Example trace file:
+Example:
 
 
 TRACE
-INIT
-ASSIGN
-ADD
-DIV
+INIT 0
+ASSIGN 1
+ADD 2
+DIV 3
 END
 
-
-The keywords `TRACE` and `END` act as delimiters and are ignored during parsing.
 
 ---
 
 ## 8.2 API Identifier Mapping
 
-The TraceParser converts API names into numeric identifiers.
+The parser converts API names into numeric identifiers:
 
 
 INIT → 1
@@ -285,13 +341,12 @@ DIV → 4
 
 ## 8.3 ExecutionTrace Representation
 
-After parsing the trace file, the execution sequence becomes:
+After parsing:
 
 
-[1,2,3,4]
+sequence = [1,2,3,4]
+time = [0,1,2,3]
 
-
-This representation is stored inside the `ExecutionTrace` object and used by the verification algorithm.
 
 ---
 
@@ -301,10 +356,10 @@ This representation is stored inside the `ExecutionTrace` object and used by the
 
 
 TRACE
-INIT
-ASSIGN
-ADD
-DIV
+INIT 0
+ASSIGN 1
+ADD 2
+DIV 3
 END
 
 
@@ -316,14 +371,14 @@ TRACE VALID
 
 ---
 
-## 9.2 Invalid Trace
+## 9.2 Invalid Trace (Timing Anomaly)
 
 
 TRACE
-INIT
-ADD
-ASSIGN
-DIV
+INIT 0
+ASSIGN 10
+ADD 20
+DIV 30
 END
 
 
@@ -332,14 +387,6 @@ Result:
 
 TRACE INVALID
 
-
-The verifier detects that the transition:
-
-
-INIT → ADD
-
-
-is not allowed by the workflow graph.
 
 ---
 
@@ -370,16 +417,15 @@ GitHub
 
 ## 11.1 Implemented Components
 
-The following components are currently implemented:
-
-- secure runtime for embedded devices
-- encrypted computation primitives
-- execution trace generation
-- workflow extraction from C programs
-- workflow graph generation
-- Java workflow verifier
-- trace parser module
-- positive and negative verification tests
+- secure runtime for embedded devices  
+- encrypted computation primitives  
+- execution trace generation  
+- workflow extraction from C programs  
+- workflow graph generation  
+- Java workflow verifier  
+- trace parser module  
+- temporal verification model  
+- timing-based validation  
 
 ---
 
@@ -390,7 +436,7 @@ trace.txt
 ↓
 TraceParser
 ↓
-ExecutionTrace
+ExecutionTrace (with time)
 ↓
 Verifier
 ↓
@@ -401,11 +447,10 @@ TRACE VALID / TRACE INVALID
 
 ## 11.3 Future Work
 
-Possible extensions include:
-
-- cryptographic authentication of execution traces
-- workflow modeling using Petri nets
-- automatic workflow extraction using LLVM
-- integration with real microcontrollers
-- remote verification server
-- runtime attestation mechanisms
+- data-aware trace model (variable-level verification)  
+- cryptographic authentication of execution traces  
+- adaptive temporal models  
+- workflow modeling using Petri nets  
+- integration with real microcontrollers  
+- remote verification server  
+- runtime attestation mechanisms  
