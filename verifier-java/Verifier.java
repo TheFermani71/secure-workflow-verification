@@ -1,42 +1,33 @@
-/*
-Verifier
-
-Validates execution traces against the workflow graph.
-*/
-
 public class Verifier {
 
     private WorkflowGraph graph;
 
     public Verifier(WorkflowGraph graph) {
-
         this.graph = graph;
-
     }
-
-    /*
-    Verifies that the execution trace follows the workflow graph
-    */
 
     public boolean verify(ExecutionTrace trace) {
 
-        int[] sequence = trace.getSequence();
+        int[] seq = trace.getSequence();
+        int[] deltas = trace.getTimeDeltas();
 
-        for(int i = 0; i < sequence.length - 1; i++) {
+        for(int i = 0; i < seq.length - 1; i++) {
 
-            int current = sequence[i];
-            int next = sequence[i + 1];
+            int current = seq[i];
+            int next = seq[i + 1];
+            int observedTime = deltas[i + 1];
 
             if(!graph.isValidTransition(current, next)) {
-
                 return false;
-
             }
 
+            int expectedTime = graph.getTime(current, next);
+
+            if(Math.abs(observedTime - expectedTime) > 1) {
+                return false;
+            }
         }
 
         return true;
-
     }
-
 }

@@ -1,38 +1,27 @@
-/*
-WorkflowGraph
-
-Represents the workflow graph extracted from the program.
-The graph is implemented using an adjacency matrix.
-*/
+import java.util.HashMap;
+import java.util.Map;
 
 public class WorkflowGraph {
 
-    private boolean[][] graph;
+    private Map<String, Integer> transitions;
 
-    public WorkflowGraph(int maxApi) {
-
-        graph = new boolean[maxApi][maxApi];
-
+    public WorkflowGraph() {
+        transitions = new HashMap<>();
     }
 
-    /*
-    Adds a valid transition between two APIs
-    */
-
-    public void addEdge(int from, int to) {
-
-        graph[from][to] = true;
-
+    private String key(int from, int to) {
+        return from + "-" + to;
     }
 
-    /*
-    Checks whether a transition is valid
-    */
+    public void addEdge(int from, int to, int time) {
+        transitions.put(key(from, to), time);
+    }
 
     public boolean isValidTransition(int from, int to) {
-
-        return graph[from][to];
-
+        return transitions.containsKey(key(from, to));
     }
 
+    public int getTime(int from, int to) {
+        return transitions.getOrDefault(key(from, to), -1);
+    }
 }

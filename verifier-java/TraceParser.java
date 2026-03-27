@@ -1,20 +1,12 @@
-/*
-TraceParser
-
-Reads a trace file produced by the device and converts it
-into an ExecutionTrace object.
-*/
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.io.*;
+import java.util.*;
 
 public class TraceParser {
 
     public static ExecutionTrace parse(String filename) {
 
         ArrayList<Integer> sequence = new ArrayList<>();
+        ArrayList<Integer> deltas = new ArrayList<>();
 
         try {
 
@@ -27,59 +19,39 @@ public class TraceParser {
                 line = line.trim();
 
                 if(line.equals("TRACE") || line.equals("END") || line.isEmpty()) {
-
                     continue;
-
                 }
 
-                int apiId = mapApiToId(line);
+                String[] parts = line.split(" ");
 
-                sequence.add(apiId);
+                String apiName = parts[0];
+                int delta = Integer.parseInt(parts[1]);
 
+                sequence.add(mapApiToId(apiName));
+                deltas.add(delta);
             }
 
             reader.close();
 
         } catch(IOException e) {
-
-            System.out.println("Error reading trace file");
             e.printStackTrace();
-
         }
 
-        int[] array = new int[sequence.size()];
+        int[] seqArray = sequence.stream().mapToInt(i -> i).toArray();
+        int[] deltaArray = deltas.stream().mapToInt(i -> i).toArray();
 
-        for(int i = 0; i < sequence.size(); i++) {
-
-            array[i] = sequence.get(i);
-
-        }
-
-        return new ExecutionTrace(array);
-
+        return new ExecutionTrace(seqArray, deltaArray);
     }
 
     private static int mapApiToId(String api) {
 
         switch(api) {
-
-            case "INIT":
-                return 1;
-
-            case "ASSIGN":
-                return 2;
-
-            case "ADD":
-                return 3;
-
-            case "DIV":
-                return 4;
-
+            case "INIT": return 1;
+            case "ASSIGN": return 2;
+            case "ADD": return 3;
+            case "DIV": return 4;
             default:
-                throw new RuntimeException("Unknown API in trace: " + api);
-
+                throw new RuntimeException("Unknown API: " + api);
         }
-
     }
-
 }
