@@ -1,23 +1,19 @@
+import java.util.List;
+
 public class ExecutionTrace {
 
-    private int[] apiSequence;
-    private int[] timeDeltas;
+    private List<TraceEntry> entries;
 
-    public ExecutionTrace(int[] apiSequence, int[] timeDeltas) {
-
-        this.apiSequence = apiSequence;
-        this.timeDeltas = timeDeltas;
+    public ExecutionTrace(List<TraceEntry> entries) {
+        this.entries = entries;
     }
 
-    public int[] getSequence() {
-        return apiSequence;
+    public List<TraceEntry> getEntries() {
+        return entries;
     }
 
-    public int[] getTimeDeltas() {
-        return timeDeltas;
+    public int size() {
+        return entries.size();
     }
 
-    public int length() {
-        return apiSequence.length;
-    }
 }

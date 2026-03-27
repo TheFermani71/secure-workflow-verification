@@ -1,57 +1,48 @@
-import java.io.*;
-import java.util.*;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.simple.*;
+import org.json.simple.parser.JSONParser;
 
 public class TraceParser {
 
     public static ExecutionTrace parse(String filename) {
 
-        ArrayList<Integer> sequence = new ArrayList<>();
-        ArrayList<Integer> deltas = new ArrayList<>();
+        List<TraceEntry> entries = new ArrayList<>();
+
+        JSONParser parser = new JSONParser();
 
         try {
 
-            BufferedReader reader = new BufferedReader(new FileReader(filename));
+            Object obj = parser.parse(new FileReader(filename));
+            JSONObject json = (JSONObject) obj;
 
-            String line;
+            JSONArray array = (JSONArray) json.get("entries");
 
-            while((line = reader.readLine()) != null) {
+            for (Object o : array) {
 
-                line = line.trim();
+                JSONObject e = (JSONObject) o;
 
-                if(line.equals("TRACE") || line.equals("END") || line.isEmpty()) {
-                    continue;
-                }
+                int varId = ((Long) e.get("var_id")).intValue();
+                int op = ((Long) e.get("op")).intValue();
 
-                String[] parts = line.split(" ");
+                String in1 = (String) e.get("in1_id");
+                String in2 = (String) e.get("in2_id");
+                String out = (String) e.get("out_id");
 
-                String apiName = parts[0];
-                int delta = Integer.parseInt(parts[1]);
+                long delta = ((Long) e.get("delta_us"));
 
-                sequence.add(mapApiToId(apiName));
-                deltas.add(delta);
+                TraceEntry entry = new TraceEntry(varId, op, in1, in2, out, delta);
+
+                entries.add(entry);
             }
 
-            reader.close();
-
-        } catch(IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        int[] seqArray = sequence.stream().mapToInt(i -> i).toArray();
-        int[] deltaArray = deltas.stream().mapToInt(i -> i).toArray();
-
-        return new ExecutionTrace(seqArray, deltaArray);
+        return new ExecutionTrace(entries);
     }
 
-    private static int mapApiToId(String api) {
-
-        switch(api) {
-            case "INIT": return 1;
-            case "ASSIGN": return 2;
-            case "ADD": return 3;
-            case "DIV": return 4;
-            default:
-                throw new RuntimeException("Unknown API: " + api);
-        }
-    }
 }
