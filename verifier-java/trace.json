@@ -1,28 +1,32 @@
 {
+  "cal_tick_us": 3000,
   "entries": [
     {
       "var_id": 1,
       "op": 1,
-      "in1_id": "",
-      "in2_id": "",
+      "op_name": "INIT",
+      "in1_id": "00000000",
+      "in2_id": "00000000",
       "out_id": "A",
-      "delta_us": 0
+      "delta_us": 50000
     },
     {
       "var_id": 1,
       "op": 2,
+      "op_name": "ASSIGN",
       "in1_id": "A",
-      "in2_id": "",
+      "in2_id": "00000000",
       "out_id": "B",
-      "delta_us": 100
+      "delta_us": 1500
     },
     {
       "var_id": 2,
       "op": 3,
+      "op_name": "ADD",
       "in1_id": "B",
       "in2_id": "B",
       "out_id": "C",
-      "delta_us": 200
+      "delta_us": 3000
     }
   ]
 }

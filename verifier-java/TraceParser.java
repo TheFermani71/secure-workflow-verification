@@ -10,6 +10,7 @@ public class TraceParser {
     public static ExecutionTrace parse(String filename) {
 
         List<TraceEntry> entries = new ArrayList<>();
+        long calTickUs = 0;
 
         JSONParser parser = new JSONParser();
 
@@ -17,6 +18,9 @@ public class TraceParser {
 
             Object obj = parser.parse(new FileReader(filename));
             JSONObject json = (JSONObject) obj;
+
+            // HEADER
+            calTickUs = (Long) json.get("cal_tick_us");
 
             JSONArray array = (JSONArray) json.get("entries");
 
@@ -27,13 +31,17 @@ public class TraceParser {
                 int varId = ((Long) e.get("var_id")).intValue();
                 int op = ((Long) e.get("op")).intValue();
 
+                String opName = (String) e.get("op_name");
+
                 String in1 = (String) e.get("in1_id");
                 String in2 = (String) e.get("in2_id");
                 String out = (String) e.get("out_id");
 
-                long delta = ((Long) e.get("delta_us"));
+                long delta = (Long) e.get("delta_us");
 
-                TraceEntry entry = new TraceEntry(varId, op, in1, in2, out, delta);
+                TraceEntry entry = new TraceEntry(
+                        varId, op, opName, in1, in2, out, delta
+                );
 
                 entries.add(entry);
             }
@@ -42,7 +50,6 @@ public class TraceParser {
             e.printStackTrace();
         }
 
-        return new ExecutionTrace(entries);
+        return new ExecutionTrace(entries, calTickUs);
     }
-
 }
