@@ -1,88 +1,99 @@
-import json
 import re
-from api_ids import API_IDS
+import json
 
-"""
-Workflow Extractor with Temporal Model
+INPUT_FILE = "sketch.ino"
+OUTPUT_FILE = "workflow_graph.json"
 
-This module extracts the workflow graph from a C program
-and assigns a temporal weight to each transition.
-"""
-
-def extract_api_calls(source_code):
-
-    api_sequence = []
-
-    for api_name in API_IDS.keys():
-
-        pattern = rf"{api_name}\s*\("
-
-        matches = re.finditer(pattern, source_code)
-
-        for match in matches:
-            api_sequence.append((match.start(), api_name))
-
-    api_sequence.sort(key=lambda x: x[0])
-
-    return [API_IDS[name] for _, name in api_sequence]
+# API che vogliamo davvero considerare (quelle del verifier)
+TARGET_APIS = {
+    "INIT",
+    "ASSIGN",
+    "ADD",
+    "DIV",
+    "AVG_N",
+    "CONST",
+    "GT",
+    "WRITE",
+    "READ"
+}
 
 
-def get_operation_weight(api_id):
+# Estrae chiamate API reali dal codice firmware
+def extract_api_calls(code):
+    pattern = r'\bsv_kernel\.f_([a-zA-Z0-9_]+)\s*\('
+    matches = re.finditer(pattern, code)
 
-    weights = {
-        1: 1,  # INIT
-        2: 1,  # ASSIGN
-        3: 2,  # ADD
-        4: 3   # DIV
-    }
+    calls = []
 
-    return weights.get(api_id, 1)
+    for m in matches:
+        raw = m.group(1).upper()
+
+        # SOLO quelle che compaiono nella trace reale
+        if "INIT" in raw:
+            calls.append("INIT")
+
+        elif "AVG" in raw:
+            calls.append("AVG_N")
+
+        elif "CONST" in raw:
+            calls.append("CONST")
+
+        elif raw == "GT":
+            calls.append("GT")
+
+        elif "WRITE" in raw:
+            calls.append("WRITE")
+
+        # IGNORA tutto il resto COMPLETAMENTE
+
+    return calls
 
 
-def build_workflow_graph(api_sequence):
-
+# Costruisce il workflow (transizioni)
+def build_edges(sequence):
     edges = []
 
-    for i in range(len(api_sequence)-1):
+    for i in range(len(sequence) - 1):
+        edge = [sequence[i], sequence[i + 1]]
 
-        a = api_sequence[i]
-        b = api_sequence[i+1]
-
-        weight = get_operation_weight(b)
-
-        edges.append({
-            "from": a,
-            "to": b,
-            "time": weight
-        })
+        # evita duplicati consecutivi
+        if len(edges) == 0 or edges[-1] != edge:
+            edges.append(edge)
 
     return edges
 
 
-def export_graph(edges):
+def main():
+
+    # Legge il codice
+    with open(INPUT_FILE, "r") as f:
+        code = f.read()
+
+    # Estrae le API rilevanti
+    sequence = extract_api_calls(code)
+
+    print("\n=== DEBUG EXTRACTOR ===")
+    print("Sequence length:", len(sequence))
+    print("Extracted sequence:")
+
+    if len(sequence) == 0:
+        print("Nessuna API trovata!")
+    else:
+        print(" -> ".join(sequence))
+
+    # Costruisce il grafo
+    edges = build_edges(sequence)
 
     graph = {
         "edges": edges
     }
 
-    with open("workflow_graph.json", "w") as f:
-        json.dump(graph, f, indent=4)
+    # Salva JSON
+    with open(OUTPUT_FILE, "w") as f:
+        json.dump(graph, f, indent=2)
 
-
-def main():
-
-    source_file = "program.c"
-
-    with open(source_file, "r") as f:
-        source_code = f.read()
-
-    api_sequence = extract_api_calls(source_code)
-
-    edges = build_workflow_graph(api_sequence)
-
-    export_graph(edges)
-
-    print("Temporal workflow graph exported")
+    print("\nWorkflow graph generated.")
+    print("Edges count:", len(edges))
 
 
 if __name__ == "__main__":

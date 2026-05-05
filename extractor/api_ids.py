@@ -6,10 +6,13 @@ inside the device runtime and verifier modules.
 """
 
 API_IDS = {
-
-    "api_init": 1,
-    "api_assign": 2,
-    "api_add": 3,
-    "api_div": 4
-
+    "INIT",
+    "ASSIGN",
+    "ADD",
+    "DIV",
+    "AVG_N",
+    "CONST",
+    "GT",
+    "WRITE",
+    "READ"
 }

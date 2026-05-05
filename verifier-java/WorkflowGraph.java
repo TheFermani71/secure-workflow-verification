@@ -1,27 +1,15 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class WorkflowGraph {
 
-    private Map<String, Integer> transitions;
+    private Map<String, Set<String>> graph = new HashMap<>();
 
-    public WorkflowGraph() {
-        transitions = new HashMap<>();
+    public void addEdge(String from, String to) {
+        graph.putIfAbsent(from, new HashSet<>());
+        graph.get(from).add(to);
     }
 
-    private String key(int from, int to) {
-        return from + "-" + to;
-    }
-
-    public void addEdge(int from, int to, int time) {
-        transitions.put(key(from, to), time);
-    }
-
-    public boolean isValidTransition(int from, int to) {
-        return transitions.containsKey(key(from, to));
-    }
-
-    public int getTime(int from, int to) {
-        return transitions.getOrDefault(key(from, to), -1);
+    public boolean isValidTransition(String from, String to) {
+        return graph.containsKey(from) && graph.get(from).contains(to);
     }
 }

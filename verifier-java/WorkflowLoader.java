@@ -4,32 +4,26 @@ import org.json.simple.parser.JSONParser;
 
 public class WorkflowLoader {
 
-    public static WorkflowGraph loadGraph(String filename) {
+    public static WorkflowGraph load(String filename) {
 
         WorkflowGraph graph = new WorkflowGraph();
 
-        JSONParser parser = new JSONParser();
-
         try {
+            JSONParser parser = new JSONParser();
+            JSONObject obj = (JSONObject) parser.parse(new FileReader(filename));
 
-            Object obj = parser.parse(new FileReader(filename));
+            JSONArray edges = (JSONArray) obj.get("edges");
 
-            JSONObject jsonObject = (JSONObject) obj;
+            for (Object o : edges) {
+                JSONArray e = (JSONArray) o;
 
-            JSONArray edges = (JSONArray) jsonObject.get("edges");
+                String from = (String) e.get(0);
+                String to = (String) e.get(1);
 
-            for(Object edge : edges) {
-
-                JSONObject e = (JSONObject) edge;
-
-                int from = ((Long) e.get("from")).intValue();
-                int to = ((Long) e.get("to")).intValue();
-                int time = ((Long) e.get("time")).intValue();
-
-                graph.addEdge(from, to, time);
+                graph.addEdge(from, to);
             }
 
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

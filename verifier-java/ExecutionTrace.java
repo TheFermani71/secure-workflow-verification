@@ -17,8 +17,4 @@ public class ExecutionTrace {
     public long getCalTickUs() {
         return calTickUs;
     }
-
-    public int size() {
-        return entries.size();
-    }
 }
