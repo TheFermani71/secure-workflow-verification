@@ -1,39 +1,125 @@
 import java.io.FileReader;
-import java.util.*;
-import org.json.simple.*;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 public class TraceParser {
 
-    public static ExecutionTrace parse(String filename) {
+    public static ExecutionTrace parse(String path) {
 
-        List<TraceEntry> list = new ArrayList<>();
-        long calTick = 0;
+        ExecutionTrace trace = new ExecutionTrace();
 
         try {
+
             JSONParser parser = new JSONParser();
-            JSONObject obj = (JSONObject) parser.parse(new FileReader(filename));
 
-            calTick = (Long) obj.get("cal_tick_us");
+            JSONObject root =
+                    (JSONObject) parser.parse(new FileReader(path));
 
-            JSONArray entries = (JSONArray) obj.get("entries");
+            /*
+             * Header JSON
+             */
+            trace.apiVersion =
+                    ((Long) root.get("sv_api_version")).intValue();
 
-            for (Object o : entries) {
-                JSONObject e = (JSONObject) o;
+            trace.deviceId =
+                    (String) root.get("device_id");
 
-                String opName = (String) e.get("op_name");
-                String in1 = (String) e.get("in1_id");
-                String in2 = (String) e.get("in2_id");
-                String out = (String) e.get("out_id");
-                long delta = (Long) e.get("delta_us");
+            trace.calTickUs =
+                    ((Long) root.get("cal_tick_us")).longValue();
 
-                list.add(new TraceEntry(opName, in1, in2, out, delta));
+            /*
+             * Entries
+             */
+            JSONArray entries =
+                    (JSONArray) root.get("entries");
+
+            for (Object obj : entries) {
+
+                JSONObject e = (JSONObject) obj;
+
+                TraceEntry entry = new TraceEntry();
+
+                entry.seq =
+                        ((Long) e.get("seq")).intValue();
+
+                entry.op =
+                        ((Long) e.get("op")).intValue();
+
+                entry.opName =
+                        (String) e.get("op_name");
+
+                entry.outId =
+                        (String) e.get("out_id");
+
+                entry.in1Id =
+                        (String) e.get("in1_id");
+
+                entry.in2Id =
+                        (String) e.get("in2_id");
+
+                entry.varId =
+                        ((Long) e.get("var_id")).intValue();
+
+                entry.varName =
+                        (String) e.get("var_name");
+
+                /*
+                 * v6:
+                 * total elapsed time
+                 */
+                entry.deltaUs =
+                        ((Long) e.get("delta_us")).longValue();
+
+                /*
+                 * v6:
+                 * trusted kernel timing
+                 */
+                entry.deltaApiUs =
+                        ((Long) e.get("delta_api_us")).longValue();
+
+                /*
+                 * Derived application timing
+                 */
+                entry.deltaGapUs =
+                        entry.deltaUs - entry.deltaApiUs;
+
+                entry.chainTag =
+                        (String) e.get("chain_tag");
+
+                trace.entries.add(entry);
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(
+                    "[TraceParser] Loaded trace:"
+            );
+
+            System.out.println(
+                    "  API version : "
+                            + trace.apiVersion
+            );
+
+            System.out.println(
+                    "  Device      : "
+                            + trace.deviceId
+            );
+
+            System.out.println(
+                    "  Entries     : "
+                            + trace.entries.size()
+            );
+
+            System.out.println(
+                    "  cal_tick_us : "
+                            + trace.calTickUs
+            );
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
         }
 
-        return new ExecutionTrace(list, calTick);
+        return trace;
     }
 }

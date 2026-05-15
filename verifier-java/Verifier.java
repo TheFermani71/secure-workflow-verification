@@ -1,56 +1,91 @@
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Verifier {
 
-    private WorkflowGraph graph;
-    private TemporalValidator temporal;
+    private WorkflowValidator workflowValidator;
 
-    public Verifier(WorkflowGraph graph) {
-        this.graph = graph;
-        this.temporal = new TemporalValidator();
+    private ApiTimingValidator apiTimingValidator;
+
+    private GapTimingValidator gapTimingValidator;
+
+    public Verifier() {
+
+        this.workflowValidator =
+                new WorkflowValidator();
+
+        this.apiTimingValidator =
+                new ApiTimingValidator();
+
+        this.gapTimingValidator =
+                new GapTimingValidator();
     }
 
-    public boolean verify(ExecutionTrace trace) {
+    /*
+     * Workflow validation
+     */
+    public boolean verifyWorkflow(
+            ExecutionTrace trace,
+            WorkflowGraph graph
+    ) {
 
-        List<TraceEntry> entries = trace.getEntries();
+        return workflowValidator.validate(
+                trace,
+                graph
+        );
+    }
 
-        // DATA FLOW
-        Set<String> produced = new HashSet<>();
+    /*
+     * Data-flow validation
+     */
+    public boolean verifyDataFlow(
+            ExecutionTrace trace
+    ) {
 
-        for (TraceEntry e : entries) {
+        Set<String> produced =
+                new HashSet<>();
 
-            if (!e.in1.equals("00000000") && !produced.contains(e.in1)) {
-                System.out.println("DataFlow error");
+        for (TraceEntry e : trace.entries) {
+
+            if (!e.in1Id.equals("00000000")
+                    && !produced.contains(e.in1Id)) {
+
                 return false;
             }
 
-            if (!e.in2.equals("00000000") && !produced.contains(e.in2)) {
-                System.out.println("DataFlow error");
+            if (!e.in2Id.equals("00000000")
+                    && !produced.contains(e.in2Id)) {
+
                 return false;
             }
 
-            produced.add(e.out);
-        }
-
-        // WORKFLOW
-        for (int i = 0; i < entries.size() - 1; i++) {
-
-            String curr = entries.get(i).opName;
-            String next = entries.get(i + 1).opName;
-
-            System.out.println("Transition: " + curr + " -> " + next);
-
-            if (!graph.isValidTransition(curr, next)) {
-                System.out.println("Workflow error");
-                return false;
-            }
-        }
-
-        // TEMPORAL
-        if (!temporal.validate(entries, trace.getCalTickUs())) {
-            return false;
+            produced.add(e.outId);
         }
 
         return true;
+    }
+
+    /*
+     * Trusted kernel timing
+     */
+    public boolean verifyApiTiming(
+            ExecutionTrace trace
+    ) {
+
+        return apiTimingValidator.validate(
+                trace
+        );
+    }
+
+    /*
+     * Application gap timing
+     */
+    public boolean verifyGapTiming(
+            ExecutionTrace trace
+    ) {
+
+        return gapTimingValidator.validate(
+                trace
+        );
     }
 }

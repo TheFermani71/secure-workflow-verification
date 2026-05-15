@@ -1,84 +1,956 @@
 {
-  "edges": [
-    [
-      "INIT",
-      "INIT"
+    "nodes": [
+        {
+            "id": 0,
+            "type": "API",
+            "name": "GPS_UPDATE"
+        },
+        {
+            "id": 1,
+            "type": "API",
+            "name": "XXX"
+        },
+        {
+            "id": 2,
+            "type": "API",
+            "name": "INIT"
+        },
+        {
+            "id": 3,
+            "type": "API",
+            "name": "INIT"
+        },
+        {
+            "id": 4,
+            "type": "API",
+            "name": "TRACE_CLEAR"
+        },
+        {
+            "id": 5,
+            "type": "API",
+            "name": "READ_TEMP_P3"
+        },
+        {
+            "id": 6,
+            "type": "API",
+            "name": "GPS_UPDATE"
+        },
+        {
+            "id": 7,
+            "type": "API",
+            "name": "TRACE_CLEAR"
+        },
+        {
+            "id": 8,
+            "type": "API",
+            "name": "AVG_N"
+        },
+        {
+            "id": 9,
+            "type": "API",
+            "name": "GPS_UPDATE"
+        },
+        {
+            "id": 10,
+            "type": "API",
+            "name": "TRACE_CLEAR"
+        },
+        {
+            "id": 11,
+            "type": "API",
+            "name": "CONST"
+        },
+        {
+            "id": 12,
+            "type": "API",
+            "name": "GPS_UPDATE"
+        },
+        {
+            "id": 13,
+            "type": "API",
+            "name": "READ_TEMP_P3"
+        },
+        {
+            "id": 14,
+            "type": "API",
+            "name": "READ_TEMP_P3"
+        },
+        {
+            "id": 15,
+            "type": "API",
+            "name": "TRACE_CLEAR"
+        },
+        {
+            "id": 16,
+            "type": "API",
+            "name": "ADD"
+        },
+        {
+            "id": 17,
+            "type": "API",
+            "name": "GPS_UPDATE"
+        },
+        {
+            "id": 18,
+            "type": "API",
+            "name": "CONST"
+        },
+        {
+            "id": 19,
+            "type": "API",
+            "name": "TRACE_CLEAR"
+        },
+        {
+            "id": 20,
+            "type": "API",
+            "name": "GT"
+        },
+        {
+            "id": 21,
+            "type": "API",
+            "name": "GPS_UPDATE"
+        },
+        {
+            "id": 22,
+            "type": "API",
+            "name": "TRACE_CLEAR"
+        },
+        {
+            "id": 23,
+            "type": "API",
+            "name": "WRITE"
+        },
+        {
+            "id": 24,
+            "type": "API",
+            "name": "GPS_UPDATE"
+        },
+        {
+            "id": 25,
+            "type": "API",
+            "name": "TRACE_CLEAR"
+        },
+        {
+            "id": 26,
+            "type": "API",
+            "name": "READ_TEMP_P3"
+        },
+        {
+            "id": 27,
+            "type": "API",
+            "name": "CONST"
+        },
+        {
+            "id": 28,
+            "type": "API",
+            "name": "GT"
+        },
+        {
+            "id": 29,
+            "type": "API",
+            "name": "ADD"
+        },
+        {
+            "id": 30,
+            "type": "API",
+            "name": "WRITE"
+        },
+        {
+            "id": 31,
+            "type": "API",
+            "name": "TRACE_COUNT"
+        },
+        {
+            "id": 32,
+            "type": "API",
+            "name": "TRACE_EXPORT"
+        },
+        {
+            "id": 33,
+            "type": "API",
+            "name": "GPS_UPDATE"
+        },
+        {
+            "id": 34,
+            "type": "API",
+            "name": "TRACE_EXPORT_JSON"
+        },
+        {
+            "id": 35,
+            "type": "API",
+            "name": "GPS_UPDATE"
+        },
+        {
+            "id": 36,
+            "type": "API",
+            "name": "INIT"
+        },
+        {
+            "id": 37,
+            "type": "API",
+            "name": "ASSIGN"
+        },
+        {
+            "id": 38,
+            "type": "API",
+            "name": "TRACE_FREE"
+        },
+        {
+            "id": 39,
+            "type": "API",
+            "name": "GPS_UPDATE"
+        },
+        {
+            "id": 40,
+            "type": "API",
+            "name": "CALIBRATE"
+        },
+        {
+            "id": 41,
+            "type": "API",
+            "name": "GPS_UPDATE"
+        },
+        {
+            "id": 42,
+            "type": "API",
+            "name": "TRACE_CLEAR"
+        },
+        {
+            "id": 43,
+            "type": "API",
+            "name": "INIT"
+        },
+        {
+            "id": 44,
+            "type": "API",
+            "name": "INIT"
+        },
+        {
+            "id": 45,
+            "type": "API",
+            "name": "GPS_UPDATE"
+        },
+        {
+            "id": 46,
+            "type": "API",
+            "name": "ASSIGN"
+        },
+        {
+            "id": 47,
+            "type": "API",
+            "name": "ASSIGN"
+        },
+        {
+            "id": 48,
+            "type": "API",
+            "name": "TRACE_FLUSH_TO_FLASH"
+        },
+        {
+            "id": 49,
+            "type": "API",
+            "name": "INIT"
+        },
+        {
+            "id": 50,
+            "type": "API",
+            "name": "INIT"
+        },
+        {
+            "id": 51,
+            "type": "API",
+            "name": "ASSIGN"
+        },
+        {
+            "id": 52,
+            "type": "API",
+            "name": "ASSIGN"
+        },
+        {
+            "id": 53,
+            "type": "API",
+            "name": "ADD"
+        },
+        {
+            "id": 54,
+            "type": "API",
+            "name": "ADD"
+        },
+        {
+            "id": 55,
+            "type": "API",
+            "name": "TRACE_COUNT"
+        },
+        {
+            "id": 56,
+            "type": "API",
+            "name": "TRACE_CLEAR"
+        },
+        {
+            "id": 57,
+            "type": "API",
+            "name": "AVG_N"
+        },
+        {
+            "id": 58,
+            "type": "API",
+            "name": "CONST"
+        },
+        {
+            "id": 59,
+            "type": "API",
+            "name": "GT"
+        },
+        {
+            "id": 60,
+            "type": "API",
+            "name": "WRITE"
+        },
+        {
+            "id": 61,
+            "type": "API",
+            "name": "TRACE_COUNT"
+        },
+        {
+            "id": 62,
+            "type": "API",
+            "name": "GPS_UPDATE"
+        },
+        {
+            "id": 63,
+            "type": "API",
+            "name": "GPS_FILL_TRACE"
+        },
+        {
+            "id": 64,
+            "type": "API",
+            "name": "TRACE_EXPORT_JSON"
+        },
+        {
+            "id": 65,
+            "type": "API",
+            "name": "BIND_BUTTON_P4"
+        },
+        {
+            "id": 66,
+            "type": "API",
+            "name": "TRACE_CLEAR"
+        },
+        {
+            "id": 67,
+            "type": "API",
+            "name": "POLL_BUTTON_P4"
+        },
+        {
+            "id": 68,
+            "type": "API",
+            "name": "TRACE_COUNT"
+        },
+        {
+            "id": 69,
+            "type": "API",
+            "name": "EVT_DROPPED_COUNT"
+        },
+        {
+            "id": 70,
+            "type": "API",
+            "name": "EVT_DROPPED_COUNT"
+        },
+        {
+            "id": 71,
+            "type": "COROUTINE",
+            "name": "COROUTINE_DELAY"
+        },
+        {
+            "id": 72,
+            "type": "COROUTINE",
+            "name": "COROUTINE_YIELD"
+        },
+        {
+            "id": 73,
+            "type": "COROUTINE",
+            "name": "COROUTINE_DELAY"
+        },
+        {
+            "id": 74,
+            "type": "COROUTINE",
+            "name": "COROUTINE_LOOP"
+        },
+        {
+            "id": 75,
+            "type": "COROUTINE",
+            "name": "COROUTINE_LOOP"
+        },
+        {
+            "id": 76,
+            "type": "API",
+            "name": "GPS_UPDATE"
+        },
+        {
+            "id": 77,
+            "type": "API",
+            "name": "POLL_BUTTON_P4"
+        },
+        {
+            "id": 78,
+            "type": "API",
+            "name": "TRACE_COUNT"
+        },
+        {
+            "id": 79,
+            "type": "COROUTINE",
+            "name": "COROUTINE_YIELD"
+        },
+        {
+            "id": 80,
+            "type": "COROUTINE",
+            "name": "COROUTINE_LOOP"
+        },
+        {
+            "id": 81,
+            "type": "COROUTINE",
+            "name": "COROUTINE_DELAY"
+        },
+        {
+            "id": 82,
+            "type": "API",
+            "name": "AVG_N"
+        },
+        {
+            "id": 83,
+            "type": "API",
+            "name": "CONST"
+        },
+        {
+            "id": 84,
+            "type": "API",
+            "name": "GT"
+        },
+        {
+            "id": 85,
+            "type": "API",
+            "name": "WRITE"
+        },
+        {
+            "id": 86,
+            "type": "API",
+            "name": "TRACE_COUNT"
+        },
+        {
+            "id": 87,
+            "type": "COROUTINE",
+            "name": "COROUTINE_YIELD"
+        },
+        {
+            "id": 88,
+            "type": "COROUTINE",
+            "name": "COROUTINE_LOOP"
+        },
+        {
+            "id": 89,
+            "type": "COROUTINE",
+            "name": "COROUTINE_DELAY"
+        },
+        {
+            "id": 90,
+            "type": "API",
+            "name": "TRACE_COUNT"
+        },
+        {
+            "id": 91,
+            "type": "API",
+            "name": "GPS_FILL_TRACE"
+        },
+        {
+            "id": 92,
+            "type": "API",
+            "name": "TRACE_EXPORT_JSON"
+        },
+        {
+            "id": 93,
+            "type": "API",
+            "name": "TRACE_FLUSH_TO_FLASH"
+        },
+        {
+            "id": 94,
+            "type": "API",
+            "name": "TRACE_CLEAR"
+        },
+        {
+            "id": 95,
+            "type": "COROUTINE",
+            "name": "COROUTINE_YIELD"
+        },
+        {
+            "id": 96,
+            "type": "API",
+            "name": "INIT"
+        },
+        {
+            "id": 97,
+            "type": "API",
+            "name": "INIT"
+        },
+        {
+            "id": 98,
+            "type": "API",
+            "name": "INIT"
+        },
+        {
+            "id": 99,
+            "type": "API",
+            "name": "CALIBRATE"
+        },
+        {
+            "id": 100,
+            "type": "API",
+            "name": "BIND_BUTTON_P4"
+        },
+        {
+            "id": 101,
+            "type": "API",
+            "name": "GPS_UPDATE"
+        },
+        {
+            "id": 102,
+            "type": "API",
+            "name": "REGISTRY_CLEAR"
+        },
+        {
+            "id": 103,
+            "type": "API",
+            "name": "TRACE_CLEAR"
+        },
+        {
+            "id": 104,
+            "type": "API",
+            "name": "TRACE_CLEAR"
+        },
+        {
+            "id": 105,
+            "type": "API",
+            "name": "TRACE_FLUSH_TO_FLASH"
+        }
     ],
-    [
-      "INIT",
-      "AVG_N"
-    ],
-    [
-      "AVG_N",
-      "CONST"
-    ],
-    [
-      "CONST",
-      "CONST"
-    ],
-    [
-      "CONST",
-      "GT"
-    ],
-    [
-      "GT",
-      "WRITE"
-    ],
-    [
-      "WRITE",
-      "CONST"
-    ],
-    [
-      "CONST",
-      "GT"
-    ],
-    [
-      "GT",
-      "WRITE"
-    ],
-    [
-      "WRITE",
-      "INIT"
-    ],
-    [
-      "INIT",
-      "AVG_N"
-    ],
-    [
-      "AVG_N",
-      "CONST"
-    ],
-    [
-      "CONST",
-      "GT"
-    ],
-    [
-      "GT",
-      "WRITE"
-    ],
-    [
-      "WRITE",
-      "AVG_N"
-    ],
-    [
-      "AVG_N",
-      "CONST"
-    ],
-    [
-      "CONST",
-      "GT"
-    ],
-    [
-      "GT",
-      "WRITE"
-    ],
-    [
-      "WRITE",
-      "INIT"
-    ],
-    [
-      "INIT",
-      "INIT"
+    "edges": [
+        {
+            "from": 0,
+            "to": 1
+        },
+        {
+            "from": 1,
+            "to": 2
+        },
+        {
+            "from": 2,
+            "to": 3
+        },
+        {
+            "from": 3,
+            "to": 4
+        },
+        {
+            "from": 4,
+            "to": 5
+        },
+        {
+            "from": 5,
+            "to": 6
+        },
+        {
+            "from": 6,
+            "to": 7
+        },
+        {
+            "from": 7,
+            "to": 8
+        },
+        {
+            "from": 8,
+            "to": 9
+        },
+        {
+            "from": 9,
+            "to": 10
+        },
+        {
+            "from": 10,
+            "to": 11
+        },
+        {
+            "from": 11,
+            "to": 12
+        },
+        {
+            "from": 12,
+            "to": 13
+        },
+        {
+            "from": 13,
+            "to": 14
+        },
+        {
+            "from": 14,
+            "to": 15
+        },
+        {
+            "from": 15,
+            "to": 16
+        },
+        {
+            "from": 16,
+            "to": 17
+        },
+        {
+            "from": 17,
+            "to": 18
+        },
+        {
+            "from": 18,
+            "to": 19
+        },
+        {
+            "from": 19,
+            "to": 20
+        },
+        {
+            "from": 20,
+            "to": 21
+        },
+        {
+            "from": 21,
+            "to": 22
+        },
+        {
+            "from": 22,
+            "to": 23
+        },
+        {
+            "from": 23,
+            "to": 24
+        },
+        {
+            "from": 24,
+            "to": 25
+        },
+        {
+            "from": 25,
+            "to": 26
+        },
+        {
+            "from": 26,
+            "to": 27
+        },
+        {
+            "from": 27,
+            "to": 28
+        },
+        {
+            "from": 28,
+            "to": 29
+        },
+        {
+            "from": 29,
+            "to": 30
+        },
+        {
+            "from": 30,
+            "to": 31
+        },
+        {
+            "from": 31,
+            "to": 32
+        },
+        {
+            "from": 32,
+            "to": 33
+        },
+        {
+            "from": 33,
+            "to": 34
+        },
+        {
+            "from": 34,
+            "to": 35
+        },
+        {
+            "from": 35,
+            "to": 36
+        },
+        {
+            "from": 36,
+            "to": 37
+        },
+        {
+            "from": 37,
+            "to": 38
+        },
+        {
+            "from": 38,
+            "to": 39
+        },
+        {
+            "from": 39,
+            "to": 40
+        },
+        {
+            "from": 40,
+            "to": 41
+        },
+        {
+            "from": 41,
+            "to": 42
+        },
+        {
+            "from": 42,
+            "to": 43
+        },
+        {
+            "from": 43,
+            "to": 44
+        },
+        {
+            "from": 44,
+            "to": 45
+        },
+        {
+            "from": 45,
+            "to": 46
+        },
+        {
+            "from": 46,
+            "to": 47
+        },
+        {
+            "from": 47,
+            "to": 48
+        },
+        {
+            "from": 48,
+            "to": 49
+        },
+        {
+            "from": 49,
+            "to": 50
+        },
+        {
+            "from": 50,
+            "to": 51
+        },
+        {
+            "from": 51,
+            "to": 52
+        },
+        {
+            "from": 52,
+            "to": 53
+        },
+        {
+            "from": 53,
+            "to": 54
+        },
+        {
+            "from": 54,
+            "to": 55
+        },
+        {
+            "from": 55,
+            "to": 56
+        },
+        {
+            "from": 56,
+            "to": 57
+        },
+        {
+            "from": 57,
+            "to": 58
+        },
+        {
+            "from": 58,
+            "to": 59
+        },
+        {
+            "from": 59,
+            "to": 60
+        },
+        {
+            "from": 60,
+            "to": 61
+        },
+        {
+            "from": 61,
+            "to": 62
+        },
+        {
+            "from": 62,
+            "to": 63
+        },
+        {
+            "from": 63,
+            "to": 64
+        },
+        {
+            "from": 64,
+            "to": 65
+        },
+        {
+            "from": 65,
+            "to": 66
+        },
+        {
+            "from": 66,
+            "to": 67
+        },
+        {
+            "from": 67,
+            "to": 68
+        },
+        {
+            "from": 68,
+            "to": 69
+        },
+        {
+            "from": 69,
+            "to": 70
+        },
+        {
+            "from": 70,
+            "to": 71
+        },
+        {
+            "from": 71,
+            "to": 72
+        },
+        {
+            "from": 72,
+            "to": 73
+        },
+        {
+            "from": 73,
+            "to": 74
+        },
+        {
+            "from": 74,
+            "to": 75
+        },
+        {
+            "from": 75,
+            "to": 76
+        },
+        {
+            "from": 76,
+            "to": 77
+        },
+        {
+            "from": 77,
+            "to": 78
+        },
+        {
+            "from": 78,
+            "to": 79
+        },
+        {
+            "from": 79,
+            "to": 80
+        },
+        {
+            "from": 80,
+            "to": 81
+        },
+        {
+            "from": 81,
+            "to": 82
+        },
+        {
+            "from": 82,
+            "to": 83
+        },
+        {
+            "from": 83,
+            "to": 84
+        },
+        {
+            "from": 84,
+            "to": 85
+        },
+        {
+            "from": 85,
+            "to": 86
+        },
+        {
+            "from": 86,
+            "to": 87
+        },
+        {
+            "from": 87,
+            "to": 88
+        },
+        {
+            "from": 88,
+            "to": 89
+        },
+        {
+            "from": 89,
+            "to": 90
+        },
+        {
+            "from": 90,
+            "to": 91
+        },
+        {
+            "from": 91,
+            "to": 92
+        },
+        {
+            "from": 92,
+            "to": 93
+        },
+        {
+            "from": 93,
+            "to": 94
+        },
+        {
+            "from": 94,
+            "to": 95
+        },
+        {
+            "from": 95,
+            "to": 96
+        },
+        {
+            "from": 96,
+            "to": 97
+        },
+        {
+            "from": 97,
+            "to": 98
+        },
+        {
+            "from": 98,
+            "to": 99
+        },
+        {
+            "from": 99,
+            "to": 100
+        },
+        {
+            "from": 100,
+            "to": 101
+        },
+        {
+            "from": 101,
+            "to": 102
+        },
+        {
+            "from": 102,
+            "to": 103
+        },
+        {
+            "from": 103,
+            "to": 104
+        },
+        {
+            "from": 104,
+            "to": 105
+        }
     ]
-  ]
 }

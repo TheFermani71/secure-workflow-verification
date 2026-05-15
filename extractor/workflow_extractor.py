@@ -1,100 +1,280 @@
 import re
 import json
 
+# ============================================
+# SV-API v6 Workflow Extractor
+#
+# Extractor v2 Architecture Preparation
+#
+# Current phase:
+# - API extraction
+# - branch hooks
+# - coroutine hooks
+# - async-aware graph model
+#
+# NOT YET:
+# - full CFG
+# - AST parsing
+# - loop analysis
+# ============================================
+
 INPUT_FILE = "sketch.ino"
+
 OUTPUT_FILE = "workflow_graph.json"
 
-# API che vogliamo davvero considerare (quelle del verifier)
-TARGET_APIS = {
-    "INIT",
-    "ASSIGN",
-    "ADD",
-    "DIV",
-    "AVG_N",
-    "CONST",
-    "GT",
-    "WRITE",
-    "READ"
-}
+# --------------------------------------------
+# API regex
+# --------------------------------------------
+
+api_pattern = re.compile(
+    r'sv_kernel\.f_([a-zA-Z0-9_]+)'
+)
+
+# --------------------------------------------
+# Coroutine hooks
+# --------------------------------------------
+
+coroutine_hooks = [
+    "COROUTINE_YIELD",
+    "COROUTINE_DELAY",
+    "COROUTINE_LOOP",
+    "COROUTINE_BEGIN",
+]
+
+# --------------------------------------------
+# Branch hooks
+# --------------------------------------------
+
+branch_keywords = [
+    "if",
+    "else",
+    "switch",
+]
+
+# --------------------------------------------
+# Loop hooks
+# --------------------------------------------
+
+loop_keywords = [
+    "for",
+    "while",
+]
+
+# --------------------------------------------
+# API normalization
+# --------------------------------------------
+
+def normalize_api(name):
+
+    name = name.upper()
+
+    if "ADD" in name:
+        return "ADD"
+
+    if "SUB" in name:
+        return "SUB"
+
+    if "MUL" in name:
+        return "MUL"
+
+    if "DIV" in name:
+        return "DIV"
+
+    if "GT" in name:
+        return "GT"
+
+    if "LT" in name:
+        return "LT"
+
+    if "EQ" in name:
+        return "EQ"
+
+    if "CONST" in name:
+        return "CONST"
+
+    if "AVG" in name:
+        return "AVG_N"
+
+    if "WRITE" in name:
+        return "WRITE"
+
+    if "ASSIGN" in name:
+        return "ASSIGN"
+
+    if "INIT" in name:
+        return "INIT"
+
+    return name
 
 
-# Estrae chiamate API reali dal codice firmware
-def extract_api_calls(code):
-    pattern = r'\bsv_kernel\.f_([a-zA-Z0-9_]+)\s*\('
-    matches = re.finditer(pattern, code)
+# --------------------------------------------
+# Graph structures
+# --------------------------------------------
 
-    calls = []
+nodes = []
+edges = []
 
-    for m in matches:
-        raw = m.group(1).upper()
+node_counter = 0
+prev_node_id = None
 
-        # SOLO quelle che compaiono nella trace reale
-        if "INIT" in raw:
-            calls.append("INIT")
+# --------------------------------------------
+# Add graph node
+# --------------------------------------------
 
-        elif "AVG" in raw:
-            calls.append("AVG_N")
+def add_node(node_type, name):
 
-        elif "CONST" in raw:
-            calls.append("CONST")
+    global node_counter
 
-        elif raw == "GT":
-            calls.append("GT")
-
-        elif "WRITE" in raw:
-            calls.append("WRITE")
-
-        # IGNORA tutto il resto COMPLETAMENTE
-
-    return calls
-
-
-# Costruisce il workflow (transizioni)
-def build_edges(sequence):
-    edges = []
-
-    for i in range(len(sequence) - 1):
-        edge = [sequence[i], sequence[i + 1]]
-
-        # evita duplicati consecutivi
-        if len(edges) == 0 or edges[-1] != edge:
-            edges.append(edge)
-
-    return edges
-
-
-def main():
-
-    # Legge il codice
-    with open(INPUT_FILE, "r") as f:
-        code = f.read()
-
-    # Estrae le API rilevanti
-    sequence = extract_api_calls(code)
-
-    print("\n=== DEBUG EXTRACTOR ===")
-    print("Sequence length:", len(sequence))
-    print("Extracted sequence:")
-
-    if len(sequence) == 0:
-        print("Nessuna API trovata!")
-    else:
-        print(" -> ".join(sequence))
-
-    # Costruisce il grafo
-    edges = build_edges(sequence)
-
-    graph = {
-        "edges": edges
+    node = {
+        "id": node_counter,
+        "type": node_type,
+        "name": name
     }
 
-    # Salva JSON
-    with open(OUTPUT_FILE, "w") as f:
-        json.dump(graph, f, indent=2)
+    nodes.append(node)
 
-    print("\nWorkflow graph generated.")
-    print("Edges count:", len(edges))
+    node_counter += 1
+
+    return node["id"]
 
 
-if __name__ == "__main__":
-    main()
+# --------------------------------------------
+# Add graph edge
+# --------------------------------------------
+
+def add_edge(from_id, to_id):
+
+    edges.append({
+        "from": from_id,
+        "to": to_id
+    })
+
+
+# --------------------------------------------
+# Parse firmware
+# --------------------------------------------
+
+with open(INPUT_FILE, "r") as f:
+
+    lines = f.readlines()
+
+for line in lines:
+
+    line = line.strip()
+
+    # ----------------------------------------
+    # API extraction
+    # ----------------------------------------
+
+    api_match = api_pattern.search(line)
+
+    if api_match:
+
+        api_name = normalize_api(
+            api_match.group(1)
+        )
+
+        node_id = add_node(
+            "API",
+            api_name
+        )
+
+        print(f"[API] {api_name}")
+
+        if prev_node_id is not None:
+
+            add_edge(prev_node_id, node_id)
+
+        prev_node_id = node_id
+
+    # ----------------------------------------
+    # Coroutine hooks
+    # ----------------------------------------
+
+    for coro in coroutine_hooks:
+
+        if coro in line:
+
+            node_id = add_node(
+                "COROUTINE",
+                coro
+            )
+
+            print(f"[COROUTINE] {coro}")
+
+            if prev_node_id is not None:
+
+                add_edge(prev_node_id, node_id)
+
+            prev_node_id = node_id
+
+    # ----------------------------------------
+    # Branch hooks
+    # ----------------------------------------
+
+    for branch in branch_keywords:
+
+        pattern = rf'\\b{branch}\\b'
+
+        if re.search(pattern, line):
+
+            node_id = add_node(
+                "BRANCH",
+                branch.upper()
+            )
+
+            print(f"[BRANCH] {branch}")
+
+            if prev_node_id is not None:
+
+                add_edge(prev_node_id, node_id)
+
+            prev_node_id = node_id
+
+    # ----------------------------------------
+    # Loop hooks
+    # ----------------------------------------
+
+    for loop in loop_keywords:
+
+        pattern = rf'\\b{loop}\\b'
+
+        if re.search(pattern, line):
+
+            node_id = add_node(
+                "LOOP",
+                loop.upper()
+            )
+
+            print(f"[LOOP] {loop}")
+
+            if prev_node_id is not None:
+
+                add_edge(prev_node_id, node_id)
+
+            prev_node_id = node_id
+
+
+# --------------------------------------------
+# Export graph
+# --------------------------------------------
+
+graph = {
+    "nodes": nodes,
+    "edges": edges
+}
+
+with open(OUTPUT_FILE, "w") as f:
+
+    json.dump(graph, f, indent=4)
+
+print()
+print("===================================")
+print(" Workflow Graph Generated (v2)")
+print("===================================")
+
+print(f"Nodes : {len(nodes)}")
+print(f"Edges : {len(edges)}")
+
+print()
+print(f"Saved to: {OUTPUT_FILE}")

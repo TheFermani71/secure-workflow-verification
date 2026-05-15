@@ -137,21 +137,25 @@
 //         variabile di destinazione, generando un nuovo out_id monotono
 //         essenziale per il data flow di Emanuel.
 //         SV_OP_VEC_PUT (90) e SV_OP_VEC_GET (91) aggiunti all'enum sv_op_t.
+//         NOTA: Le API GPS e VEC descritte in [R2L5-GPS] e [R2L5-VEC] sono
+//         state successivamente rimosse in [R3L6] (email Prof. Culmone
+//         13.05.2026). Vedere changelog R3L6 per i dettagli.
 //
-//  Changelog (R3L5 - Fix — 27.04.2026, GPS zero-data + trace completa per Emanuel):
+//  Changelog (R3L5 - Fix — 27.04.2026, GPS zero-data + trace completa per
+//  Emanuel):
 //
 //  [R3L5-GPS-FILL] Baco critico in gps_fill_trace(): le coordinate lat/lng
 //         venivano azzerate quando isValid() == false, anche se TinyGPSPlus
 //         le aveva già parsate da frame NMEA con status 'V' (void/last-known).
 //         Il modulo ATGM336H trasmette le ultime coordinate note anche prima
-//         di confermare il fix (status 'A'); il display le mostrava correttamente
-//         leggendo s_gps.location.lat() direttamente, ma il JSON le perdeva
-//         perché gps_fill_trace() le forzava a 0.0.
-//         Fix: (1) gps_update() chiamata all'inizio di gps_fill_trace() per
-//         drenare il buffer UART prima della lettura; (2) le coordinate vengono
-//         salvate sempre — s_gps.location.lat/lng() — senza condizionale su
-//         isValid(). Il campo gps_valid comunica al verifier di Emanuel se il
-//         fix è confermato o stimato (last-known).
+//         di confermare il fix (status 'A'); il display le mostrava
+//         correttamente leggendo s_gps.location.lat() direttamente, ma il JSON
+//         le perdeva perché gps_fill_trace() le forzava a 0.0. Fix: (1)
+//         gps_update() chiamata all'inizio di gps_fill_trace() per drenare il
+//         buffer UART prima della lettura; (2) le coordinate vengono salvate
+//         sempre — s_gps.location.lat/lng() — senza condizionale su isValid().
+//         Il campo gps_valid comunica al verifier di Emanuel se il fix è
+//         confermato o stimato (last-known).
 //
 //  [R3L5-GPS-BENCH] Aggiunto sv_kernel.f_gps_update() tra le sezioni del
 //         benchmark (ai punti yield()) per prevenire l'overflow del buffer
@@ -163,6 +167,75 @@
 //  [R3L5-JSON-FULL] La traccia JSON ora viene stampata per intero sul Serial
 //         (non più troncata a 200 caratteri) come richiesto da Emanuel.
 //         La dimensione tipica è ~1800 B, gestibile dal monitor seriale.
+//
+//  Changelog (Lezione 6 — 05.05.2026):
+//
+//  [L6-CLASS] Classificazione delle API in 3 categorie (dalla lezione):
+//         Cat. 1 — Dichiarazione strutture: sv_init_var,
+//         sv_trace_init/free/clear
+//         Cat. 2 — I/O sincrono e asincrono:
+//         sv_read_temp_P3,
+//                  sv_poll_button_P4 (async via ISR/ring-buffer), sv_write_fan_P12
+//         Cat. 3 — Elaborazione e confronto logico: sv_add/sub/mul/div,
+//                  sv_gt/lt/eq, sv_const, sv_inc, sv_avg_lastN
+//         [R3L6] sv_read_gps_* rimossi (ora user-space puro via f_assign_f).
+//
+//  [L6-PROTO] Il protocollo JSON della trace prende il nome "Stefano-Ennio"
+//         (dal nome degli studenti della triennale che l'hanno progettato).
+//         Documentato nel commento della funzione sv_trace_export_json.
+//
+//  [L6-FUTURE] Prospettive future: il design architetturale prepara il
+//         terreno per lo spostamento della verifica su Smart
+//         Contract/Blockchain.
+//
+//  [L6-ARIANE] Riferimento storico al caso Ariane 5 (1996): motiva
+//         l'importanza della verifica formale del workflow.
+//
+//  [L6-PERF] Osservazione sulle destinazioni d'uso: monitoraggio (overhead
+//         tollerabile) vs controllo real-time (vincoli stringenti).
+//
+//  [L6-FLASH] Persistenza parallelizzata della trace su Flash via LittleFS
+//         (discussa in aula come prospettiva teorica — NON richiesta nelle
+//         email successive). Buffering in RAM con soglia configurabile,
+//         flush asincrono in append-mode, rotazione file.
+//
+//  [L6-COROUTINE] Refactoring asincrono basato sull'uso della libreria
+//         AceRoutine. Il monolite sincrono-bloccante dell'application layer
+//         è stato rimpiazzato con uno scheduler cooperativo stackless.
+//
+//  Changelog (R1L6 - email Prof. Culmone — 10.05.2026):
+//
+//  [R1L6-GPS] Le API sv_read_gps_lat/lng/sats RIMOSSE dalla dispatch table
+//         del kernel (sv_syscall_table_t). Restano nella Sezione 2 come
+//         routine ordinarie. Documentato come esempio di VULNERABILITÀ.
+//
+//  [R1L6-CONST] I tempi di esecuzione delle API crittografiche devono
+//         essere COSTANTI per categoria. Unica eccezione: sv_trace_export_json
+//         il cui tempo è O(n). Documentato nei commenti.
+//
+//  [R1L6-GAP] Vulnerabilità inter-API: il codice utente può inserire
+//         ritardi arbitrari tra le API. delta_gap_us è risolutivo.
+//
+//  Changelog (R2L6 - email Riccardo — 11.05.2026):
+//
+//  [R2L6-2LVL] Misurazione a due livelli nella trace:
+//         delta_api_us = tempo di esecuzione interno dell'API (costante).
+//         delta_gap_us = delta_us − delta_api_us = gap inter-API.
+//         Il verifier di Emanuel valida entrambi separatamente.
+//
+//  [R2L6-HMAC] delta_api_us inserito nel payload HMAC (sostituisce pad32):
+//         il tempo interno dell'API è autenticato dalla blockchain della
+//         trace. SV_API_VERSION aggiornata a 5.
+//
+//  Changelog (R3L6 - Refactoring Architetturale — 13-14.05.2026):
+//  [R3L6-CLEANUP-GPS] Rimozione totale API GPS dal kernel e Application layer native var.
+//  [R3L6-CLEANUP-VEC] Rimozione vettori crittografati in favore di array sv_val_t.
+//  [R3L6-NO-RTOS] Rimozione FreeRTOS. Sostituzione con ring-buffer volatile C.
+//  [R3L6-JSON-NOTA] [R3L6-OVERHEAD] [R3L6-FUTURO] Commenti e ottimizzazioni documentate.
+//  [R3L6-GRAFO] Le macro AceRoutine (YIELD/DELAY/LOOP) sono nodi di biforcazione
+//         nel grafo di verifica del workflow (email Prof. Culmone 14.05.2026).
+//         La verifica strutturale della traccia è valida, la verifica temporale
+//         inter-coroutine richiede kernelizzazione (sviluppo futuro).
 // ═══════════════════════════════════════════════════════════════
 
 #include <stddef.h>
@@ -181,8 +254,11 @@
 #include <mbedtls/gcm.h>
 #include <mbedtls/md.h>
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/queue.h>
+#include <LittleFS.h> // [L6-FLASH] Persistenza Flash
+
+// [L6-COROUTINE] Multitasking cooperativo (stackless coroutines)
+#include <AceRoutine.h>
+using namespace ace_routine;
 
 // [L5-1] GPS — Atomic GPS Base v2.0 (ATGM336H via UART)
 //
@@ -207,7 +283,9 @@
 // Quando NON è definito (default — Wokwi / env:esp32dev):
 //   - Il GPS è simulato (coordinate fittizie di Camerino)
 //   - Compatibile con Wokwi web e qualsiasi board ESP32
-#define GPS_HARDWARE // <-- AGGIUNTO TEMPORANEAMENTE PER IL TEST SU ARDUINO IDE
+#ifndef GPS_HARDWARE
+#define GPS_HARDWARE // Per Wokwi: commenta questa riga per simulazione Wokwi
+#endif
 #ifdef GPS_HARDWARE
 #include <M5Unified.h>
 #include <TinyGPSPlus.h>
@@ -233,8 +311,11 @@ static HardwareSerial GPSSerial(1);
 // della trace o della struttura dati condivisa con il server di Emanuel.
 // v2: delta_us, cal_tick_us, op_name, var_id (Lezione 4)
 // v3: init_us, blocco gps, device_id condizionale (Lezione 5)
-// v4: API vettoriali e lettura GPS crittografata (Lezione 7)
-#define SV_API_VERSION 4
+// v4: API vettoriali e lettura GPS crittografata (R2L5)
+// v5: delta_api_us, rimozione GPS dal kernel, protocollo "Stefano-Ennio"
+// (Lezione 6)
+// v6: R3L6 - Rimozione opcode GPS e VEC, payload JSON modificato in ASSIGN
+#define SV_API_VERSION 6
 
 // ───────────────────────────────────────────────────────────────
 //  SEZIONE 1 — Tipi, Costanti e Strutture (sv_api.h)
@@ -260,19 +341,11 @@ typedef uint32_t sv_id_t;     // ID runtime dell'oggetto (monotono crescente)
 typedef uint16_t sv_var_id_t; // ID logico variabile (stabile tra reassignment)
 typedef uint16_t sv_src_id_t; // ID logico sensore/porta
 
-// Sorgenti hardware fisse (per READ_GPS)
-#define SV_SRC_GPS_LAT 0x1001
-#define SV_SRC_GPS_LNG 0x1002
-#define SV_SRC_GPS_SATS 0x1003
-
 typedef enum { SV_T_I32 = 1, SV_T_F32 = 2, SV_T_BOOL = 3 } sv_type_t;
 
 typedef enum {
   SV_OP_READ = 1,
   SV_OP_EVENT = 2,
-  SV_OP_READ_GPS_LAT = 6,
-  SV_OP_READ_GPS_LNG = 7,
-  SV_OP_READ_GPS_SATS = 8,
   SV_OP_ADD = 10,
   SV_OP_SUB = 11,
   SV_OP_MUL = 12,
@@ -289,27 +362,30 @@ typedef enum {
   SV_OP_AVG_N = 60,
   SV_OP_INIT = 70,
   SV_OP_ASSIGN = 71,
-  SV_OP_BIND = 80, // setup ISR/hardware registrato nella traccia
-  SV_OP_VEC_PUT = 90,
-  SV_OP_VEC_GET = 91
+  SV_OP_BIND = 80 // setup ISR/hardware registrato nella traccia
 } sv_op_t;
 
 // ── Entry della Traccia ───────────────────────────────────────
 // [L4-2] delta_us sostituisce struct timespec ts (8 B → 4 B per entry).
 // Il server confronta delta_us con il quanto di calibrazione (cal_tick_us)
 // per rilevare downclocking o ritardi artificiali tra le operazioni.
+// [R2L6-2LVL] delta_api_us aggiunto per la misurazione a due livelli:
+//   delta_api_us = tempo interno dell'API (deve essere costante per categoria)
+//   delta_gap_us = delta_us − delta_api_us (gap inter-API, superficie di
+//   attacco)
 typedef struct {
   sv_op_t op;
-  sv_id_t out_id;       // ID runtime dell'oggetto prodotto
-  sv_id_t in1_id;       // ID runtime del primo operando (0 se assente)
-  sv_id_t in2_id;       // ID runtime del secondo operando (0 se assente)
-  sv_var_id_t out_var;  // ID logico della variabile output
-  sv_src_id_t meta_src; // porta sorgente (per READ/EVENT)
-  uint16_t meta_u16;    // metadato contestuale (es. N per AVG_N)
-  uint16_t _pad;
-  uint32_t delta_us; // [L4-2] µs trascorsi dall'operazione precedente
+  sv_id_t out_id;        // ID runtime dell'oggetto prodotto
+  sv_id_t in1_id;        // ID runtime del primo operando (0 se assente)
+  sv_id_t in2_id;        // ID runtime del secondo operando (0 se assente)
+  sv_var_id_t out_var;   // ID logico della variabile output
+  sv_src_id_t meta_src;  // porta sorgente (per READ/EVENT)
+  uint16_t meta_u16;     // metadato contestuale (es. N per AVG_N)
+  uint16_t _pad;         // padding per allineamento
+  uint32_t delta_us;     // [L4-2] µs totali dall'operazione precedente
+  uint32_t delta_api_us; // [R2L6] µs di esecuzione interna dell'API
   uint8_t chain_tag[SV_HMAC_LEN]; // HMAC chained tag (blockchain della trace)
-} sv_trace_entry_t;               // 60 bytes (era 64 B con struct timespec)
+} sv_trace_entry_t; // 64 bytes [R2L6] (era 60 B, ora allineato a potenza di 2)
 
 // ── Contesto Dinamico della Traccia ──────────────────────────
 // [L4-3] cal_tick_us memorizza il risultato di sv_calibrate() per
@@ -327,6 +403,9 @@ typedef struct {
   double gps_lng;    // longitudine (WGS84)
   uint32_t gps_sats; // satelliti visibili
   bool gps_valid;    // true se fix GPS valido
+  // [L6-FLASH] Persistenza Flash asincrona
+  size_t flash_count; // numero di entry persistite su Flash
+  bool use_flash;     // flag abilitazione persistenza su LittleFS
 } sv_trace_t;
 
 extern sv_trace_t g_trace;
@@ -369,15 +448,6 @@ typedef struct {
 #define FLOAT sv_val_t
 #define UNSIGNED_LONG sv_val_t
 
-// ── Vettore Crittografato ─────────────────────────────────────
-// Contenitore per acquisizione massiva. Contiene sv_val_t sigillati.
-typedef struct {
-  sv_val_t *data;
-  size_t capacity;
-  size_t size;
-  sv_var_id_t vec_id; // ID identificativo del vettore
-} sv_vec_t;
-
 // ── Registry dei Nomi ─────────────────────────────────────────
 // var_id aggiunto per la ricerca inversa (var_id → name) durante
 // la serializzazione JSON richiesta da Emanuel per il data flow verifier.
@@ -409,19 +479,10 @@ int sv_trace_count(const sv_trace_t *t);
 void sv_registry_clear(void);
 
 int sv_read_temp_P3(sv_var_id_t var, sv_val_t *out);
-int sv_read_gps_lat(sv_var_id_t var, sv_val_t *out);
-int sv_read_gps_lng(sv_var_id_t var, sv_val_t *out);
-int sv_read_gps_sats(sv_var_id_t var, sv_val_t *out);
 
 int sv_bind_button_P4(void);
 int sv_poll_button_P4(sv_var_id_t var, sv_val_t *out);
 uint32_t sv_evt_dropped_count(void);
-
-// — Vettori Crittografati —
-int sv_vec_alloc(size_t capacity, sv_var_id_t vec_id, sv_vec_t *out_vec);
-void sv_vec_free(sv_vec_t *vec);
-int sv_vec_put(sv_vec_t *vec, uint32_t index, const sv_val_t *val);
-int sv_vec_get(const sv_vec_t *vec, uint32_t index, sv_var_id_t var, sv_val_t *out);
 
 int sv_add(const sv_val_t *a, const sv_val_t *b, sv_var_id_t var,
            sv_val_t *out);
@@ -450,6 +511,10 @@ int sv_trace_export(sv_trace_t *t, uint8_t *buf, size_t cap, size_t *out_len);
 // trasporto è affidata a HTTPS (Wi-Fi ESP32/M5Stack), non a cifratura
 // aggiuntiva on-device. La funzione produce JSON leggibile pronto per
 // l'invio. Il chiamante deve free() il buffer restituito in *json_out.
+// [R3L6-JSON-NOTA] La serializzazione JSON maschera la rimozione degli opcode
+// hardware-specifici (GPS/VEC) sfruttando l'opcode generico ASSIGN.
+// Questo garantisce compatibilità col verifier di Emanuel senza variare
+// lo schema del payload.
 int sv_trace_export_json(const sv_trace_t *trace, char **json_out,
                          size_t *json_len);
 
@@ -491,22 +556,16 @@ typedef struct {
   void (*f_trace_free)(sv_trace_t *t);
   void (*f_trace_clear)(sv_trace_t *t);
   int (*f_trace_count)(const sv_trace_t *t);
+  void (*f_trace_flash_init)(sv_trace_t *t);     // [L6-FLASH]
+  void (*f_trace_flush_to_flash)(sv_trace_t *t); // [L6-FLASH]
   // — I/O hardware protetto —
   int (*f_read_temp_P3)(sv_var_id_t var, sv_val_t *out);
-  int (*f_read_gps_lat)(sv_var_id_t var, sv_val_t *out);
-  int (*f_read_gps_lng)(sv_var_id_t var, sv_val_t *out);
-  int (*f_read_gps_sats)(sv_var_id_t var, sv_val_t *out);
   int (*f_avg_lastN_temp_P3)(uint16_t N, sv_var_id_t var, sv_val_t *out);
   int (*f_bind_button_P4)(void);
   int (*f_poll_button_P4)(sv_var_id_t var, sv_val_t *out);
   uint32_t (*f_evt_dropped_count)(void);
   int (*f_write_fan_P12)(const sv_bool_t *on);
-  
-  // — Vettori Crittografati —
-  int (*f_vec_alloc)(size_t capacity, sv_var_id_t vec_id, sv_vec_t *out_vec);
-  void (*f_vec_free)(sv_vec_t *vec);
-  int (*f_vec_put)(sv_vec_t *vec, uint32_t index, const sv_val_t *val);
-  int (*f_vec_get)(const sv_vec_t *vec, uint32_t index, sv_var_id_t var, sv_val_t *out);
+
   // — Operazioni aritmetiche e logiche su variabili protette —
   int (*f_add)(const sv_val_t *a, const sv_val_t *b, sv_var_id_t var,
                sv_val_t *out);
@@ -702,12 +761,6 @@ static const char *sv_op_name(sv_op_t op) {
     return "READ";
   case SV_OP_EVENT:
     return "EVENT";
-  case SV_OP_READ_GPS_LAT:
-    return "READ_GPS_LAT";
-  case SV_OP_READ_GPS_LNG:
-    return "READ_GPS_LNG";
-  case SV_OP_READ_GPS_SATS:
-    return "READ_GPS_SATS";
   case SV_OP_ADD:
     return "ADD";
   case SV_OP_SUB:
@@ -742,10 +795,6 @@ static const char *sv_op_name(sv_op_t op) {
     return "ASSIGN";
   case SV_OP_BIND:
     return "BIND";
-  case SV_OP_VEC_PUT:
-    return "VEC_PUT";
-  case SV_OP_VEC_GET:
-    return "VEC_GET";
   default:
     return "UNKNOWN";
   }
@@ -758,14 +807,12 @@ static void bytes_to_hex(const uint8_t *src, size_t len, char *dst) {
   dst[len * 2] = '\0';
 }
 
-// ── Trace Append Dinamico ─────────────────────────────────────
-// [L4-2] Calcola delta_us = tempo trascorso dall'ultima operazione.
-// Questo valore è la misura che il server confronta con cal_tick_us per
-// rilevare anomalie temporali (downclocking, ritardi artificiali, ecc.).
-// La struttura HMAC chained (blockchain) garantisce la non-falsificabilità.
+// [R2L6-2LVL] delta_api_us aggiunto come parametro: il tempo interno dell'API
+// viene passato da ogni API pubblica e inserito nel payload HMAC.
 static int trace_append_dynamic(sv_trace_t *trace, sv_op_t op, sv_id_t out_id,
                                 sv_id_t in1, sv_id_t in2, sv_var_id_t var,
-                                sv_src_id_t src, uint16_t meta) {
+                                sv_src_id_t src, uint16_t meta,
+                                uint32_t delta_api_us) {
   if (!trace)
     return SV_ERR_TRACE_FULL;
 
@@ -811,8 +858,10 @@ static int trace_append_dynamic(sv_trace_t *trace, sv_op_t op, sv_id_t out_id,
   off += 2;
   memcpy(payload + off, &delta_us, 4);
   off += 4;
-  uint32_t pad32 = 0;
-  memcpy(payload + off, &pad32, 4);
+  // [R2L6-HMAC] delta_api_us sostituisce il padding finale (pad32): il tempo
+  // interno dell'API è ora autenticato dalla blockchain crittografica della
+  // trace. Qualsiasi tentativo di falsificare i tempi nel JSON romperà l'HMAC.
+  memcpy(payload + off, &delta_api_us, 4);
   off += 4; // totale = 32 B
 
   // new_tag = HMAC-SHA256(K_trace, prev_tag || payload)
@@ -835,6 +884,7 @@ static int trace_append_dynamic(sv_trace_t *trace, sv_op_t op, sv_id_t out_id,
   e->meta_u16 = meta;
   e->_pad = 0;
   e->delta_us = delta_us;
+  e->delta_api_us = delta_api_us; // [R2L6]
   memcpy(e->chain_tag, new_tag, SV_HMAC_LEN);
   memcpy(trace->chain_tag, new_tag, SV_HMAC_LEN);
   return SV_OK;
@@ -846,10 +896,13 @@ static int trace_append_dynamic(sv_trace_t *trace, sv_op_t op, sv_id_t out_id,
 // il var_id viene preservato così la lookup per nome continua a funzionare
 // per tutta la vita della variabile, indipendentemente da quante operazioni
 // vengono eseguite su di essa.
+// [R2L6] api_start_us: timestamp di ingresso nell'API pubblica, usato per
+//        calcolare delta_api_us = sv_now_us() - api_start_us.
 static int seal_and_trace_at(sv_type_t type, sv_var_id_t var, sv_src_id_t src,
                              sv_id_t in1, sv_id_t in2, sv_op_t op,
                              uint16_t meta, const sv_raw_data_t *raw,
-                             sv_trace_t *trace, sv_val_t *out) {
+                             sv_trace_t *trace, sv_val_t *out,
+                             uint64_t api_start_us) {
   char tmp_name[32] = {0};
   strncpy(tmp_name, out->h.name, 32);
   // [FIX] Preserva var_id se la variabile è stata inizializzata con init().
@@ -869,15 +922,19 @@ static int seal_and_trace_at(sv_type_t type, sv_var_id_t var, sv_src_id_t src,
   int r = gcm_seal(&out->h, raw, out->blob);
   if (r != SV_OK)
     return r;
+  // [R2L6] Calcolo delta_api_us: tempo interno dell'API (dalla prima
+  // istruzione dell'API pubblica fino a qui, dopo il seal).
+  uint32_t d_api = (uint32_t)(sv_now_us() - api_start_us);
   return trace_append_dynamic(trace, op, out->h.id, in1, in2, out->h.var_id,
-                              src, meta);
+                              src, meta, d_api);
 }
 
 static int seal_and_trace(sv_type_t type, sv_var_id_t var, sv_src_id_t src,
                           sv_id_t in1, sv_id_t in2, sv_op_t op, uint16_t meta,
                           const sv_raw_data_t *raw, sv_trace_t *trace,
-                          sv_val_t *out) {
-  return seal_and_trace_at(type, var, src, in1, in2, op, meta, raw, trace, out);
+                          sv_val_t *out, uint64_t api_start_us) {
+  return seal_and_trace_at(type, var, src, in1, in2, op, meta, raw, trace, out,
+                           api_start_us);
 }
 
 // ── Ciclo di vita Traccia ─────────────────────────────────────
@@ -895,6 +952,8 @@ void sv_trace_init(sv_trace_t *t) {
   t->gps_lng = 0.0;
   t->gps_sats = 0;
   t->gps_valid = false;
+  t->flash_count = 0;
+  t->use_flash = false;
   memset(t->chain_tag, 0, SV_HMAC_LEN);
 }
 
@@ -916,6 +975,7 @@ void sv_trace_clear(sv_trace_t *t) {
     t->count = 0;
     // [L5-2] Reset timestamp testa del nuovo batch
     t->init_us = sv_now_us();
+    t->flash_count = 0;
     memset(t->chain_tag, 0, SV_HMAC_LEN);
   }
   s_last_op_us = 0; // [L4-2] reset inter-op timer all'inizio di ogni batch
@@ -923,10 +983,59 @@ void sv_trace_clear(sv_trace_t *t) {
 
 int sv_trace_count(const sv_trace_t *t) { return t ? (int)t->count : 0; }
 
+// ── [L6-FLASH] Persistenza asincrona su LittleFS ──────────────
+// Inizializza il filesystem e prepara il file di trace.
+void sv_trace_flash_init(sv_trace_t *t) {
+  if (!t)
+    return;
+  t->use_flash = false;
+#ifdef GPS_HARDWARE
+  if (LittleFS.begin(true)) {
+    t->use_flash = true;
+    // Rimuove eventuali trace precedenti non esportate
+    if (LittleFS.exists("/sv_trace.bin")) {
+      LittleFS.remove("/sv_trace.bin");
+    }
+    Serial.println("[L6-FLASH] LittleFS inizializzato per persistenza trace.");
+  } else {
+    Serial.println("[L6-FLASH] Errore montaggio LittleFS!");
+  }
+#endif
+}
+
+// Flush condizionale delle entry dalla RAM alla Flash.
+// Deve essere chiamato solo in contesti sicuri (es. yield) per non
+// perturbare i delta temporali critici.
+void sv_trace_flush_to_flash(sv_trace_t *t) {
+#ifdef GPS_HARDWARE
+  if (!t || !t->use_flash || t->count == 0)
+    return;
+
+  // Soglia di buffer per minimizzare scritture su flash (es. 32 entry)
+  if (t->count < 32)
+    return;
+
+  File f = LittleFS.open("/sv_trace.bin", FILE_APPEND);
+  if (!f)
+    return;
+
+  size_t written =
+      f.write((uint8_t *)t->entries, t->count * sizeof(sv_trace_entry_t));
+  f.close();
+
+  if (written == t->count * sizeof(sv_trace_entry_t)) {
+    t->flash_count += t->count;
+    // Reset buffer RAM: manteniamo capacity ma azzeriamo count
+    t->count = 0;
+  }
+#endif
+}
+
 // ── sv_init_var ───────────────────────────────────────────────
 // [L4-1] Rimosso il campo ts dall'header: nessun clock_gettime() qui.
 // [FIX] var_id è passato esplicitamente a register_name per il lookup inverso.
 sv_val_t sv_init_var(sv_type_t type, const char *name, sv_trace_t *trace_ref) {
+  uint64_t api_t0 = sv_now_us(); // [R2L6] inizio misurazione interna API
   sv_val_t result;
   memset(&result, 0, sizeof(result));
   if (!name || !trace_ref)
@@ -950,14 +1059,17 @@ sv_val_t sv_init_var(sv_type_t type, const char *name, sv_trace_t *trace_ref) {
   sv_raw_data_t zero;
   zero.u_val = 0;
   gcm_seal(&result.h, &zero, result.blob);
+  // [R2L6] Calcolo delta_api_us per INIT
+  uint32_t d_api = (uint32_t)(sv_now_us() - api_t0);
   trace_append_dynamic(trace_ref, SV_OP_INIT, result.h.id, 0, 0,
-                       result.h.var_id, 0, 0);
+                       result.h.var_id, 0, 0, d_api);
   return result;
 }
 
 // ── assign — assegnamento esplicito ──────────────────────────
 // [L4-1] Rimosso ts dall'header: nessun sv_now().
 int assign(sv_val_t *var, int32_t value) {
+  uint64_t api_t0 = sv_now_us(); // [R2L6]
   if (!var || !var->trace_ref)
     return SV_ERR_CRYPTO_FAIL;
   char saved_name[32];
@@ -976,11 +1088,13 @@ int assign(sv_val_t *var, int32_t value) {
   int r = gcm_seal(&var->h, &raw, var->blob);
   if (r != SV_OK)
     return r;
+  uint32_t d_api = (uint32_t)(sv_now_us() - api_t0);
   return trace_append_dynamic(var->trace_ref, SV_OP_ASSIGN, var->h.id, 0, 0,
-                              var->h.var_id, 0, 0);
+                              var->h.var_id, 0, 0, d_api);
 }
 
 int assign_f(sv_val_t *var, float value) {
+  uint64_t api_t0 = sv_now_us(); // [R2L6]
   if (!var || !var->trace_ref)
     return SV_ERR_CRYPTO_FAIL;
   char saved_name[32];
@@ -999,8 +1113,9 @@ int assign_f(sv_val_t *var, float value) {
   int r = gcm_seal(&var->h, &raw, var->blob);
   if (r != SV_OK)
     return r;
+  uint32_t d_api = (uint32_t)(sv_now_us() - api_t0);
   return trace_append_dynamic(var->trace_ref, SV_OP_ASSIGN, var->h.id, 0, 0,
-                              var->h.var_id, 0, 0);
+                              var->h.var_id, 0, 0, d_api);
 }
 
 // ── [L4-3] sv_calibrate ───────────────────────────────────────
@@ -1070,21 +1185,15 @@ uint32_t sv_calibrate(uint16_t n_samples) {
   // Reset del timer inter-op per non contaminare la prima misura.
   s_last_op_us = 0;
 
-  // [L5-FIX] Riduzione jitter su hardware reale: eleviamo la priorità del
-  // task corrente al massimo per minimizzare le preemption di FreeRTOS.
-  // NOTA: NON usiamo noInterrupts() perché sull'ESP32-S3 l'acceleratore
-  // hardware AES-GCM richiede interrupt attivi — disabilitarli causa abort().
-  UBaseType_t old_prio = uxTaskPriorityGet(NULL);
-  vTaskPrioritySet(NULL, configMAX_PRIORITIES - 1);
+  // [R3L6-NO-RTOS] Rimossa la manipolazione di priorità FreeRTOS
+  // (vTaskPrioritySet). Sull'ESP32-S3 l'hardware AES-GCM e l'averaging su
+  // n_samples=8 ammortizzano a sufficienza le preemption senza OS lock.
 
   uint64_t t0 = sv_now_us();
   for (uint16_t i = 0; i < n_samples; i++) {
     sv_add(&ca, &cb, 0, &cc);
   }
   uint64_t t1 = sv_now_us();
-
-  // Ripristina la priorità originale del task.
-  vTaskPrioritySet(NULL, old_prio);
 
   sv_trace_free(&cal_trace);
 
@@ -1107,7 +1216,12 @@ typedef struct {
   uint8_t press;
 } sv_evt_t;
 
-static QueueHandle_t s_evtq = NULL;
+// [R3L6-NO-RTOS] Sostituzione di QueueHandle_t con un ring buffer C puro volatile
+#define SV_EVT_RING_SIZE 16
+static volatile sv_evt_t s_evt_ring[SV_EVT_RING_SIZE];
+static volatile uint8_t s_evt_head = 0;
+static volatile uint8_t s_evt_tail = 0;
+
 static volatile uint32_t s_evt_dropped = 0;
 static volatile uint8_t s_evt_overflow = 0;
 static volatile uint32_t s_last_isr_us = 0;
@@ -1119,23 +1233,17 @@ static void IRAM_ATTR isr_btn_p4() {
   if ((uint32_t)(now - s_last_isr_us) < BTN_DEBOUNCE_US)
     return;
   s_last_isr_us = now;
-  sv_evt_t e;
-  // [L4-1] esp_timer_get_time() invece di clock_gettime(CLOCK_REALTIME):
-  // stesso contatore usato ovunque nel kernel per coerenza del delta_us.
-  e.us_isr = (uint32_t)esp_timer_get_time();
-  e.press = 1;
-  BaseType_t hp = pdFALSE;
-  if (s_evtq) {
-    if (xQueueSendFromISR(s_evtq, &e, &hp) != pdPASS) {
-      s_evt_dropped++;
-      s_evt_overflow = 1;
-    }
-    if (hp)
-      portYIELD_FROM_ISR();
-  } else {
+  uint8_t next_head = (s_evt_head + 1) % SV_EVT_RING_SIZE;
+  if (next_head == s_evt_tail) {
     s_evt_dropped++;
     s_evt_overflow = 1;
+    return;
   }
+  // [L4-1] esp_timer_get_time() invece di clock_gettime(CLOCK_REALTIME):
+  // stesso contatore usato ovunque nel kernel per coerenza del delta_us.
+  s_evt_ring[s_evt_head].us_isr = (uint32_t)esp_timer_get_time();
+  s_evt_ring[s_evt_head].press = 1;
+  s_evt_head = next_head;
 }
 
 uint32_t sv_evt_dropped_count(void) { return (uint32_t)s_evt_dropped; }
@@ -1160,14 +1268,16 @@ int sv_init(void) {
 
 // ── Sensor Reads ──────────────────────────────────────────────
 int sv_read_temp_P3(sv_var_id_t var, sv_val_t *out) {
+  uint64_t api_t0 = sv_now_us(); // [R2L6]
   sv_raw_data_t raw;
   raw.f_val = 20.0f + (float)(esp_random() % 1001) / 100.0f;
   sv_trace_t *tr = out->trace_ref ? out->trace_ref : &g_trace;
   return seal_and_trace(SV_T_F32, var, 0x0003, 0, 0, SV_OP_READ, 0, &raw, tr,
-                        out);
+                        out, api_t0);
 }
 
 int sv_avg_lastN_temp_P3(uint16_t N, sv_var_id_t var, sv_val_t *out) {
+  uint64_t api_t0 = sv_now_us(); // [R2L6]
   if (N == 0)
     return SV_ERR_SENSOR_FAIL;
   float sum = 0.0f;
@@ -1177,40 +1287,42 @@ int sv_avg_lastN_temp_P3(uint16_t N, sv_var_id_t var, sv_val_t *out) {
   raw.f_val = sum / (float)N;
   sv_trace_t *tr = out->trace_ref ? out->trace_ref : &g_trace;
   return seal_and_trace(SV_T_F32, var, 0x0003, 0, 0, SV_OP_AVG_N, N, &raw, tr,
-                        out);
+                        out, api_t0);
 }
 
 // ── Async Button ──────────────────────────────────────────────
 int sv_bind_button_P4(void) {
+  uint64_t api_t0 = sv_now_us(); // [R2L6]
   pinMode(BTN_GPIO, INPUT_PULLUP);
-  if (!s_evtq) {
-    s_evtq = xQueueCreate(64, sizeof(sv_evt_t));
-    if (!s_evtq)
-      return SV_ERR_CRYPTO_FAIL;
-  }
+  s_evt_head = 0;
+  s_evt_tail = 0;
   s_evt_dropped = 0;
   s_evt_overflow = 0;
   s_last_isr_us = 0;
-  xQueueReset(s_evtq);
   if (s_btn_isr_attached)
     detachInterrupt(digitalPinToInterrupt(BTN_GPIO));
   attachInterrupt(digitalPinToInterrupt(BTN_GPIO), isr_btn_p4, FALLING);
   s_btn_isr_attached = true;
-  trace_append_dynamic(&g_trace, SV_OP_BIND, 0, 0, 0, 0, 0x0004, 0);
+  uint32_t d_api = (uint32_t)(sv_now_us() - api_t0);
+  trace_append_dynamic(&g_trace, SV_OP_BIND, 0, 0, 0, 0, 0x0004, 0, d_api);
   return SV_OK;
 }
 
 int sv_poll_button_P4(sv_var_id_t var, sv_val_t *out) {
-  if (!s_evtq)
-    return SV_ERR_NO_EVENT;
+  uint64_t api_t0 = sv_now_us(); // [R2L6]
   if (s_evt_overflow) {
     s_evt_overflow = 0;
-    if (uxQueueMessagesWaiting(s_evtq) == 0)
+    if (s_evt_head == s_evt_tail)
       return SV_ERR_QUEUE_FULL;
   }
-  sv_evt_t e;
-  if (xQueueReceive(s_evtq, &e, 0) != pdTRUE)
+  if (s_evt_head == s_evt_tail)
     return SV_ERR_NO_EVENT;
+  // [R3L6-NO-RTOS] Copia manuale campo-per-campo: il C++ non consente
+  // copy-construct implicito da volatile struct (errore: binding volatile ref).
+  sv_evt_t e;
+  e.us_isr = s_evt_ring[s_evt_tail].us_isr;
+  e.press  = s_evt_ring[s_evt_tail].press;
+  s_evt_tail = (s_evt_tail + 1) % SV_EVT_RING_SIZE;
   sv_raw_data_t raw;
   raw.u_val = e.press ? 1u : 0u;
   sv_trace_t *tr = out->trace_ref ? out->trace_ref : &g_trace;
@@ -1220,140 +1332,19 @@ int sv_poll_button_P4(sv_var_id_t var, sv_val_t *out) {
   uint64_t prev_last = s_last_op_us;
   s_last_op_us = (uint64_t)e.us_isr; // il "prev" per questo delta è l'ISR
   int r = seal_and_trace_at(SV_T_BOOL, var, 0x0004, 0, 0, SV_OP_EVENT, 1, &raw,
-                            tr, out);
+                            tr, out, api_t0);
   if (r != SV_OK) {
     s_last_op_us = prev_last;
   }
   return r;
 }
 
-// ── Protezione Dati GPS in Tempo Reale ───────────────────────
-// [R2L5-GPS] Queste tre API chiudono la finestra di vulnerabilità in cui i
-// dati GPS restavano "in chiaro" in RAM dopo essere stati processati da
-// TinyGPSPlus. Come suggerito dal Prof. Culmone, il parser NMEA rimane
-// nella zona in chiaro (spostarlo nel kernel lo appesantirebbe troppo),
-// ma il dato numerico viene sigillato con AES-GCM immediatamente dopo la
-// conversione ASCII→float, prima di essere restituito all'applicazione.
-//
-// Nota architetturale: queste funzioni sono codice kernel (Section 2) e
-// chiamano gps_update() tramite forward declaration, NON attraverso
-// sv_kernel.f_gps_update(). Il kernel che richiama la propria dispatch
-// table pubblica sarebbe architetturalmente scorretto (equivalente a un
-// SO che usa le proprie syscall per chiamarsi internamente).
-//
-// Forward declaration necessaria perché gps_update() è una static function
-// definita più avanti nella sezione GPS, dopo queste implementazioni.
-static void gps_update(void);
 
-int sv_read_gps_lat(sv_var_id_t var, sv_val_t *out) {
-  if (!out || !out->trace_ref) return SV_ERR_TYPE_MISMATCH;
-  if (out->h.type != SV_T_F32) return SV_ERR_TYPE_MISMATCH;
-#ifdef GPS_HARDWARE
-  gps_update(); // Consuma il buffer UART NMEA (chiamata diretta kernel-interna)
-  sv_raw_data_t raw = {.f_val = (float)s_gps.location.lat()};
-#else
-  sv_raw_data_t raw = {.f_val = 43.1381f};
-#endif
-  return seal_and_trace(SV_T_F32, var, SV_SRC_GPS_LAT, 0, 0, SV_OP_READ_GPS_LAT,
-                        0, &raw, out->trace_ref, out);
-}
-
-int sv_read_gps_lng(sv_var_id_t var, sv_val_t *out) {
-  if (!out || !out->trace_ref) return SV_ERR_TYPE_MISMATCH;
-  if (out->h.type != SV_T_F32) return SV_ERR_TYPE_MISMATCH;
-#ifdef GPS_HARDWARE
-  gps_update(); // Chiamata diretta kernel-interna (non via dispatch table)
-  sv_raw_data_t raw = {.f_val = (float)s_gps.location.lng()};
-#else
-  sv_raw_data_t raw = {.f_val = 13.0684f};
-#endif
-  return seal_and_trace(SV_T_F32, var, SV_SRC_GPS_LNG, 0, 0, SV_OP_READ_GPS_LNG,
-                        0, &raw, out->trace_ref, out);
-}
-
-int sv_read_gps_sats(sv_var_id_t var, sv_val_t *out) {
-  if (!out || !out->trace_ref) return SV_ERR_TYPE_MISMATCH;
-  if (out->h.type != SV_T_I32) return SV_ERR_TYPE_MISMATCH;
-#ifdef GPS_HARDWARE
-  gps_update(); // Chiamata diretta kernel-interna (non via dispatch table)
-  sv_raw_data_t raw = {.i_val = (int32_t)s_gps.satellites.value()};
-#else
-  sv_raw_data_t raw = {.i_val = 0};
-#endif
-  return seal_and_trace(SV_T_I32, var, SV_SRC_GPS_SATS, 0, 0, SV_OP_READ_GPS_SATS,
-                        0, &raw, out->trace_ref, out);
-}
-
-// ── Vettori Crittografati ─────────────────────────────────────
-// [R2L5-VEC] Gestione batching e memoria protetta per N elementi.
-// L'idea architetturale: il vettore memorizza sv_val_t già sigillati.
-// VEC_PUT non aggiunge un nuovo ciclo GCM (il dato è già cifrato); si limita
-// a copiare il blob e a registrare l'inserimento nella HMAC chain.
-// VEC_GET verifica l'integrità (unseal) e ri-sigilla verso la variabile di
-// destinazione, generando un nuovo out_id monotono per il data flow.
-int sv_vec_alloc(size_t capacity, sv_var_id_t vec_id, sv_vec_t *out_vec) {
-  if (!out_vec || capacity == 0) return SV_ERR_TYPE_MISMATCH;
-  out_vec->data = (sv_val_t*)malloc(capacity * sizeof(sv_val_t));
-  if (!out_vec->data) return SV_ERR_TRACE_FULL; // OOM
-  out_vec->capacity = capacity;
-  out_vec->size = 0;
-  out_vec->vec_id = vec_id;
-  return SV_OK;
-}
-
-void sv_vec_free(sv_vec_t *vec) {
-  if (vec && vec->data) {
-    free(vec->data);
-    vec->data = NULL;
-    vec->capacity = 0;
-    vec->size = 0;
-  }
-}
-
-// sv_vec_put — inserisce un valore già sigillato nel vettore.
-//
-// Scelta progettuale: NON usa seal_and_trace() (che eseguirebbe un nuovo
-// ciclo AES-GCM su una variabile dummy ~230 µs sprecati) ma chiama
-// trace_append_dynamic() direttamente, esattamente come fa sv_write_fan_P12.
-// Il costo è ridotto al solo HMAC per la catena di trace (~50 µs):
-// questo è il risparmio economico che consente il batching efficiente.
-//
-// Traccia semantica per Emanuel:
-//   out_id = nuovo ID monotono per questa operazione VEC_PUT
-//   in1_id = val->h.id  (provenienza: quale valore viene inserito)
-//   in2_id = vec->vec_id (destinazione: in quale vettore)
-//   var    = vec->vec_id (ID logico del vettore)
-//   meta   = index       (posizione nel vettore, visibile nel JSON)
-int sv_vec_put(sv_vec_t *vec, uint32_t index, const sv_val_t *val) {
-  if (!vec || !vec->data || !val || index >= vec->capacity) return SV_ERR_TYPE_MISMATCH;
-  // Copia profonda del blob già sigillato — zero operazioni GCM aggiuntive.
-  memcpy(&vec->data[index], val, sizeof(sv_val_t));
-  if (index >= vec->size) vec->size = index + 1;
-  // Registra nella HMAC chain senza seal: stesso schema di sv_write_fan_P12.
-  sv_trace_t *tr = val->trace_ref ? val->trace_ref : &g_trace;
-  sv_id_t put_id = sv_next_id();
-  return trace_append_dynamic(tr, SV_OP_VEC_PUT, put_id, val->h.id,
-                              (sv_id_t)vec->vec_id, vec->vec_id, 0,
-                              (uint16_t)(index & 0xFFFF));
-}
-
-int sv_vec_get(const sv_vec_t *vec, uint32_t index, sv_var_id_t var, sv_val_t *out) {
-  if (!vec || !vec->data || !out || index >= vec->size) return SV_ERR_TYPE_MISMATCH;
-  // Unseal per verificare integrità: rileva qualsiasi manomissione del blob in RAM.
-  sv_raw_data_t raw;
-  const sv_val_t *stored_val = &vec->data[index];
-  int r = sv_unseal(stored_val, &raw);
-  if (r != SV_OK) return r;
-  // Re-seal verso la variabile di destinazione: genera un nuovo out_id monotono,
-  // mantenendo la catena degli ID runtime intatta per il data flow di Emanuel.
-  return seal_and_trace(stored_val->h.type, var, 0, stored_val->h.id,
-                        (sv_id_t)vec->vec_id, SV_OP_VEC_GET, index, &raw,
-                        out->trace_ref, out);
-}
 
 // ── Operazioni Aritmetiche ────────────────────────────────────
 int sv_add(const sv_val_t *a, const sv_val_t *b, sv_var_id_t var,
            sv_val_t *out) {
+  uint64_t api_t0 = sv_now_us(); // [R2L6] inizio misurazione interna API
   if (a->h.type != b->h.type)
     return SV_ERR_TYPE_MISMATCH;
   sv_trace_t *tr = a->trace_ref ? a->trace_ref : &g_trace;
@@ -1368,11 +1359,12 @@ int sv_add(const sv_val_t *a, const sv_val_t *b, sv_var_id_t var,
   else
     rc.f_val = ra.f_val + rb.f_val;
   return seal_and_trace(a->h.type, var, 0, a->h.id, b->h.id, SV_OP_ADD, 0, &rc,
-                        tr, out);
+                        tr, out, api_t0);
 }
 
 int sv_sub(const sv_val_t *a, const sv_val_t *b, sv_var_id_t var,
            sv_val_t *out) {
+  uint64_t api_t0 = sv_now_us(); // [R2L6]
   if (a->h.type != b->h.type)
     return SV_ERR_TYPE_MISMATCH;
   sv_trace_t *tr = a->trace_ref ? a->trace_ref : &g_trace;
@@ -1387,11 +1379,12 @@ int sv_sub(const sv_val_t *a, const sv_val_t *b, sv_var_id_t var,
   else
     rc.f_val = ra.f_val - rb.f_val;
   return seal_and_trace(a->h.type, var, 0, a->h.id, b->h.id, SV_OP_SUB, 0, &rc,
-                        tr, out);
+                        tr, out, api_t0);
 }
 
 int sv_mul(const sv_val_t *a, const sv_val_t *b, sv_var_id_t var,
            sv_val_t *out) {
+  uint64_t api_t0 = sv_now_us(); // [R2L6]
   if (a->h.type != b->h.type)
     return SV_ERR_TYPE_MISMATCH;
   sv_trace_t *tr = a->trace_ref ? a->trace_ref : &g_trace;
@@ -1406,11 +1399,12 @@ int sv_mul(const sv_val_t *a, const sv_val_t *b, sv_var_id_t var,
   else
     rc.f_val = ra.f_val * rb.f_val;
   return seal_and_trace(a->h.type, var, 0, a->h.id, b->h.id, SV_OP_MUL, 0, &rc,
-                        tr, out);
+                        tr, out, api_t0);
 }
 
 int sv_div(const sv_val_t *a, const sv_val_t *b, sv_var_id_t var,
            sv_val_t *out) {
+  uint64_t api_t0 = sv_now_us(); // [R2L6]
   if (a->h.type != b->h.type)
     return SV_ERR_TYPE_MISMATCH;
   sv_trace_t *tr = a->trace_ref ? a->trace_ref : &g_trace;
@@ -1430,11 +1424,12 @@ int sv_div(const sv_val_t *a, const sv_val_t *b, sv_var_id_t var,
     rc.f_val = ra.f_val / rb.f_val;
   }
   return seal_and_trace(a->h.type, var, 0, a->h.id, b->h.id, SV_OP_DIV, 0, &rc,
-                        tr, out);
+                        tr, out, api_t0);
 }
 
 static int sv_cmp(const sv_val_t *a, const sv_val_t *b, sv_var_id_t var,
                   sv_op_t op, sv_bool_t *out) {
+  uint64_t api_t0 = sv_now_us(); // [R2L6]
   if (a->h.type != b->h.type)
     return SV_ERR_TYPE_MISMATCH;
   sv_trace_t *tr = a->trace_ref ? a->trace_ref : &g_trace;
@@ -1462,7 +1457,7 @@ static int sv_cmp(const sv_val_t *a, const sv_val_t *b, sv_var_id_t var,
   }
   rc.u_val = res ? 1u : 0u;
   return seal_and_trace(SV_T_BOOL, var, 0, a->h.id, b->h.id, op, 0, &rc, tr,
-                        &out->v);
+                        &out->v, api_t0);
 }
 int sv_gt(const sv_val_t *a, const sv_val_t *b, sv_var_id_t v, sv_bool_t *o) {
   return sv_cmp(a, b, v, SV_OP_GT, o);
@@ -1475,20 +1470,23 @@ int sv_eq(const sv_val_t *a, const sv_val_t *b, sv_var_id_t v, sv_bool_t *o) {
 }
 
 int sv_const_i32(int32_t k, sv_var_id_t var, sv_val_t *out) {
+  uint64_t api_t0 = sv_now_us(); // [R2L6]
   sv_raw_data_t raw;
   raw.i_val = k;
   sv_trace_t *tr = out->trace_ref ? out->trace_ref : &g_trace;
   return seal_and_trace(SV_T_I32, var, 0, 0, 0, SV_OP_CONST,
-                        (uint16_t)(k & 0xFFFF), &raw, tr, out);
+                        (uint16_t)(k & 0xFFFF), &raw, tr, out, api_t0);
 }
 int sv_const_f32(float k, sv_var_id_t var, sv_val_t *out) {
+  uint64_t api_t0 = sv_now_us(); // [R2L6]
   sv_raw_data_t raw;
   raw.f_val = k;
   sv_trace_t *tr = out->trace_ref ? out->trace_ref : &g_trace;
   return seal_and_trace(SV_T_F32, var, 0, 0, 0, SV_OP_CONST,
-                        (uint16_t)(raw.u_val >> 16), &raw, tr, out);
+                        (uint16_t)(raw.u_val >> 16), &raw, tr, out, api_t0);
 }
 int sv_inc(const sv_val_t *c, sv_var_id_t var, sv_val_t *out) {
+  uint64_t api_t0 = sv_now_us(); // [R2L6]
   sv_trace_t *tr = c->trace_ref ? c->trace_ref : &g_trace;
   sv_raw_data_t raw;
   int r = sv_unseal(c, &raw);
@@ -1499,10 +1497,11 @@ int sv_inc(const sv_val_t *c, sv_var_id_t var, sv_val_t *out) {
   else
     raw.f_val += 1.f;
   return seal_and_trace(c->h.type, var, 0, c->h.id, 0, SV_OP_CNT, 0, &raw, tr,
-                        out);
+                        out, api_t0);
 }
 
 int sv_write_fan_P12(const sv_bool_t *on) {
+  uint64_t api_t0 = sv_now_us(); // [R2L6]
   sv_raw_data_t raw;
   int r = sv_unseal(&on->v, &raw);
   if (r != SV_OK)
@@ -1510,8 +1509,9 @@ int sv_write_fan_P12(const sv_bool_t *on) {
   digitalWrite(12, raw.u_val ? HIGH : LOW);
   sv_trace_t *tr = on->v.trace_ref ? on->v.trace_ref : &g_trace;
   sv_id_t wid = sv_next_id();
-  return trace_append_dynamic(tr, SV_OP_WRITE, wid, on->v.h.id, 0, 0, 0x000C,
-                              0);
+  uint32_t d_api = (uint32_t)(sv_now_us() - api_t0);
+  return trace_append_dynamic(tr, SV_OP_WRITE, wid, on->v.h.id, 0, 0, 0x000C, 0,
+                              d_api);
 }
 
 // ── Export Raw (diagnostica / benchmark interno) ──────────────
@@ -1529,13 +1529,23 @@ int sv_trace_export(sv_trace_t *t, uint8_t *buf, size_t cap, size_t *out_len) {
 }
 
 // ── [L4-4] sv_trace_export_json ───────────────────────────────
-// Serializza la trace in JSON leggibile per la trasmissione HTTPS al server.
+// [L6-PROTO] Serializzazione JSON secondo il "Protocollo Stefano-Ennio"
+// (nome ufficiale del formato di trace, Lezione 6 — 05.05.2026).
 // Nessuna cifratura aggiuntiva on-device: la sicurezza del trasporto è
 // garantita da TLS (HTTPS Wi-Fi M5Stack), come concordato a Lezione 4.
 //
+// [R1L6-CONST] NOTA: questa è l'unica API del sistema il cui tempo di
+// esecuzione NON è costante. La durata scala linearmente O(n) con il
+// numero di entry nella trace. Tutte le altre API devono avere delta_api_us
+// costante per categoria (verifica Riccardo, email 11.05.2026).
+// [R3L6-JSON-NOTA] Il tempo di questa API NON deve essere incluso nella
+// verifica temporale da parte del verifier di Emanuel: è puro overhead
+// di serializzazione estraneo al flusso di esecuzione del kernel
+// (direttiva Prof. Culmone, email 13.05.2026).
+//
 // Formato JSON condiviso con Emanuel per il workflow verifier:
 // {
-//   "sv_api_version": 3,
+//   "sv_api_version": 6,
 //   "device_id": "ESP32_WOKWI" | "ATOM_GPS_V2",
 //   "cal_tick_us": 1234,      ← quanto di riferimento per verifica temporale
 //   "init_us": 123456789,     ← [L5-2] timestamp assoluto testa trace
@@ -1554,6 +1564,7 @@ int sv_trace_export(sv_trace_t *t, uint8_t *buf, size_t cap, size_t *out_len) {
 //       "var_id": 1,          ← "ide" stabile di Emanuel per data flow
 //       "var_name": "temperatura", ← nome simbolico (dal registry)
 //       "delta_us": 0,        ← µs dall'operazione precedente
+//       "delta_api_us": 123,  ← [R2L6] µs interni all'API (costante per cat.)
 //       "chain_tag": "AABB..."
 //     }, ...
 //   ],
@@ -1561,22 +1572,28 @@ int sv_trace_export(sv_trace_t *t, uint8_t *buf, size_t cap, size_t *out_len) {
 // }
 int sv_trace_export_json(const sv_trace_t *trace, char **json_out,
                          size_t *json_len) {
-  if (!trace || trace->count == 0) {
+  size_t total_count = trace ? trace->count : 0;
+#ifdef GPS_HARDWARE
+  if (trace && trace->use_flash)
+    total_count += trace->flash_count;
+#endif
+
+  if (!trace || total_count == 0) {
     *json_out = NULL;
     *json_len = 0;
     return SV_ERR_NO_EVENT;
   }
 
   // [L5-1] Stima aumentata per header GPS e init_us
-  size_t max_sz = 256 + trace->count * 300 + 32;
+  // [R2L6] +20 B/entry per delta_api_us
+  size_t max_sz = 256 + total_count * 340 + 32;
   char *json = (char *)malloc(max_sz);
   if (!json)
     return SV_ERR_TRACE_FULL;
 
-  // Tag finale = chain_tag dell'ultima entry = commit MAC del batch
-  const sv_trace_entry_t *last = &trace->entries[trace->count - 1];
+  // Tag finale dal running state, che copre anche le entry già su Flash
   char final_tag_hex[SV_HMAC_LEN * 2 + 1];
-  bytes_to_hex(last->chain_tag, SV_HMAC_LEN, final_tag_hex);
+  bytes_to_hex(trace->chain_tag, SV_HMAC_LEN, final_tag_hex);
 
   size_t pos = 0;
   pos +=
@@ -1595,41 +1612,67 @@ int sv_trace_export_json(const sv_trace_t *trace, char **json_out,
                SV_API_VERSION, (unsigned long)trace->cal_tick_us,
                (unsigned long long)trace->init_us, trace->gps_lat,
                trace->gps_lng, (unsigned long)trace->gps_sats,
-               trace->gps_valid ? "true" : "false", trace->count);
+               trace->gps_valid ? "true" : "false", total_count);
+
+  size_t global_seq = 0;
+
+// Macro helper per formattare una singola entry, usata sia per la flash che per
+// la RAM
+#define FORMAT_ENTRY(e_ptr)                                                    \
+  do {                                                                         \
+    char etag[SV_HMAC_LEN * 2 + 1];                                            \
+    bytes_to_hex((e_ptr)->chain_tag, SV_HMAC_LEN, etag);                       \
+    const char *vname = lookup_var_name((e_ptr)->out_var);                     \
+    char entry[360];                                                           \
+    snprintf(entry, sizeof(entry),                                             \
+             "%s{"                                                             \
+             "\"seq\":%zu,"                                                    \
+             "\"op\":%d,"                                                      \
+             "\"op_name\":\"%s\","                                             \
+             "\"out_id\":\"%08lX\","                                           \
+             "\"in1_id\":\"%08lX\","                                           \
+             "\"in2_id\":\"%08lX\","                                           \
+             "\"var_id\":%u,"                                                  \
+             "\"var_name\":\"%s\","                                            \
+             "\"delta_us\":%lu,"                                               \
+             "\"delta_api_us\":%lu,"                                           \
+             "\"chain_tag\":\"%s\""                                            \
+             "}",                                                              \
+             (global_seq > 0) ? "," : "", global_seq, (int)(e_ptr)->op,        \
+             sv_op_name((e_ptr)->op), (unsigned long)(e_ptr)->out_id,          \
+             (unsigned long)(e_ptr)->in1_id, (unsigned long)(e_ptr)->in2_id,   \
+             (unsigned)(e_ptr)->out_var, vname,                                \
+             (unsigned long)(e_ptr)->delta_us,                                 \
+             (unsigned long)(e_ptr)->delta_api_us, etag);                      \
+    size_t elen = strlen(entry);                                               \
+    if (pos + elen + 64 < max_sz) {                                            \
+      memcpy(json + pos, entry, elen);                                         \
+      pos += elen;                                                             \
+    }                                                                          \
+    global_seq++;                                                              \
+  } while (0)
+
+#ifdef GPS_HARDWARE
+  if (trace->use_flash && trace->flash_count > 0) {
+    File f = LittleFS.open("/sv_trace.bin", FILE_READ);
+    if (f) {
+      sv_trace_entry_t fe;
+      while (f.read((uint8_t *)&fe, sizeof(sv_trace_entry_t)) ==
+                 sizeof(sv_trace_entry_t) &&
+             pos < max_sz - 128) {
+        FORMAT_ENTRY(&fe);
+      }
+      f.close();
+    }
+  }
+#endif
 
   for (size_t i = 0; i < trace->count && pos < max_sz - 128; i++) {
     const sv_trace_entry_t *e = &trace->entries[i];
-    char etag[SV_HMAC_LEN * 2 + 1];
-    bytes_to_hex(e->chain_tag, SV_HMAC_LEN, etag);
-
-    // Ricerca inversa del nome simbolico: O(n) ma eseguita solo all'export.
-    const char *vname = lookup_var_name(e->out_var);
-
-    char entry[320];
-    snprintf(entry, sizeof(entry),
-             "%s{"
-             "\"seq\":%zu,"
-             "\"op\":%d,"
-             "\"op_name\":\"%s\","
-             "\"out_id\":\"%08lX\","
-             "\"in1_id\":\"%08lX\","
-             "\"in2_id\":\"%08lX\","
-             "\"var_id\":%u,"
-             "\"var_name\":\"%s\","
-             "\"delta_us\":%lu,"
-             "\"chain_tag\":\"%s\""
-             "}",
-             (i > 0) ? "," : "", i, (int)e->op, sv_op_name(e->op),
-             (unsigned long)e->out_id, (unsigned long)e->in1_id,
-             (unsigned long)e->in2_id, (unsigned)e->out_var, vname,
-             (unsigned long)e->delta_us, etag);
-
-    size_t elen = strlen(entry);
-    if (pos + elen + 64 < max_sz) {
-      memcpy(json + pos, entry, elen);
-      pos += elen;
-    }
+    FORMAT_ENTRY(e);
   }
+
+#undef FORMAT_ENTRY
 
   if (pos + 40 < max_sz) {
     pos += snprintf(json + pos, max_sz - pos, "],\"final_tag\":\"%s\"}",
@@ -1673,8 +1716,8 @@ static void gps_fill_trace(sv_trace_t *t) {
   // confermato con status 'A'. Questa è la ragione per cui il display
   // mostrava 43.13941 mentre il JSON riportava 0.0: il display leggeva
   // s_gps direttamente, il JSON perdeva i dati a causa dello zero-forzato.
-  t->gps_lat  = s_gps.location.lat();
-  t->gps_lng  = s_gps.location.lng();
+  t->gps_lat = s_gps.location.lat();
+  t->gps_lng = s_gps.location.lng();
   t->gps_sats = s_gps.satellites.value();
 }
 
@@ -1721,19 +1764,19 @@ const sv_syscall_table_t sv_kernel = {
     .f_trace_free = sv_trace_free,
     .f_trace_clear = sv_trace_clear,
     .f_trace_count = sv_trace_count,
+    .f_trace_flash_init = sv_trace_flash_init,
+    .f_trace_flush_to_flash = sv_trace_flush_to_flash,
     .f_read_temp_P3 = sv_read_temp_P3,
-    .f_read_gps_lat = sv_read_gps_lat,
-    .f_read_gps_lng = sv_read_gps_lng,
-    .f_read_gps_sats = sv_read_gps_sats,
+    // [R3L6-CLEANUP-GPS] API GPS rimosse interamente dal kernel (email
+    // Prof. Culmone 13.05.2026). L'acquisizione GPS avviene ora in
+    // user-space tramite f_assign_f() su variabili sv_val_t standard.
+    // [R3L6-CLEANUP-VEC] API vettoriali rimosse: il batching usa array
+    // nativi di sv_val_t nell'Application Layer.
     .f_avg_lastN_temp_P3 = sv_avg_lastN_temp_P3,
     .f_bind_button_P4 = sv_bind_button_P4,
     .f_poll_button_P4 = sv_poll_button_P4,
     .f_evt_dropped_count = sv_evt_dropped_count,
     .f_write_fan_P12 = sv_write_fan_P12,
-    .f_vec_alloc = sv_vec_alloc,
-    .f_vec_free = sv_vec_free,
-    .f_vec_put = sv_vec_put,
-    .f_vec_get = sv_vec_get,
     .f_add = sv_add,
     .f_sub = sv_sub,
     .f_mul = sv_mul,
@@ -1821,16 +1864,16 @@ static void print_banner() {
   Serial.println(F("╔══════════════════════════════════════════════════════════"
                    "══════════════╗"));
 #ifdef GPS_HARDWARE
-  Serial.println(F("║  SV-API Benchmark — AtomS3 GPS v2.0  (Lezione 5 — "
-                   "14.04.2026)          ║"));
+  Serial.println(F("║  SV-API Benchmark — AtomS3 GPS v2.0  (Lezione 6 — "
+                   "05.05.2026)          ║"));
 #else
-  Serial.println(F("║  SV-API Benchmark — ESP32/Wokwi  (Lezione 5 — "
-                   "14.04.2026)             ║"));
+  Serial.println(F("║  SV-API Benchmark — ESP32/Wokwi  (Lezione 6 — "
+                   "05.05.2026)             ║"));
 #endif
-  Serial.println(F("║  AES-128-GCM sealed values  .  delta_us trace  .  "
-                   "calibrazione       ║"));
-  Serial.println(F("║  JSON export via HTTPS  .  data flow fields per verifier "
-                   "Emanuel      ║"));
+  Serial.println(F("║  AES-128-GCM sealed values  .  delta_us + delta_api_us  "
+                   ". calibrazione   ║"));
+  Serial.println(F("║  Protocollo Stefano-Ennio JSON  .  verifier Emanuel  .  "
+                   "API v6          ║"));
   Serial.println(F("╚══════════════════════════════════════════════════════════"
                    "══════════════╝"));
   Serial.println();
@@ -2056,50 +2099,11 @@ static void run_benchmarks(void) {
   sv_kernel.f_gps_update(); // [R3L5-GPS-BENCH] drain UART buffer
   yield();
 
-  // [R2L5-VEC] Benchmark sv_vec_put e sv_vec_get.
-  // sv_vec_put non esegue GCM seal (fix R2L5): usa trace_append_dynamic diretto.
-  // Il costo è ridotto al solo HMAC chain, analogo a sv_write_fan_P12.
-  // Il confronto con sv_add (~464 µs) mostra il risparmio economico per il
-  // batching: 1000 VEC_PUT << 1000 sv_add (risparmio ~10x per l'acquisizione).
-  {
-    sv_vec_t bvec;
-    sv_val_t bv = init(SV_T_F32, "bm_vec_src", &g_trace);
-    sv_kernel.f_assign_f(&bv, 1.0f);
-    sv_kernel.f_vec_alloc(4, 0x8FFF, &bvec);
-    // Pre-riempi index 0 per il benchmark get
-    sv_kernel.f_vec_put(&bvec, 0, &bv);
-
-    st = Stats{};
-    for (int i = 0; i < N_BENCH; i++) {
-      sv_kernel.f_trace_clear(&g_trace);
-      t0 = us_now_app();
-      r = sv_kernel.f_vec_put(&bvec, 0, &bv);
-      t1 = us_now_app();
-      st.record(t0, t1, r);
-    }
-    print_row("sv_vec_put (HMAC only, no seal)", st.avg(), st.min_us, st.max_us,
-              "<<sv_add", st.errors);
-    sv_kernel.f_gps_update(); // [R3L5-GPS-BENCH] drain UART buffer
-    yield();
-
-    sv_val_t bv_out = init(SV_T_F32, "bm_vec_dst", &g_trace);
-    st = Stats{};
-    for (int i = 0; i < N_BENCH; i++) {
-      sv_kernel.f_trace_clear(&g_trace);
-      t0 = us_now_app();
-      r = sv_kernel.f_vec_get(&bvec, 0, 0x8FFE, &bv_out);
-      t1 = us_now_app();
-      st.record(t0, t1, r);
-    }
-    print_row("sv_vec_get (unseal+reseal)", st.avg(), st.min_us, st.max_us,
-              "~sv_add/2", st.errors);
-    sv_kernel.f_gps_update(); // [R3L5-GPS-BENCH] drain UART buffer — ultima
-                              // sezione del benchmark: massima utilità prima
-                              // dell'avvio delle demo GPS.
-    yield();
-
-    sv_kernel.f_vec_free(&bvec);
-  }
+  // [R3L6-CLEANUP-VEC] Benchmark sv_vec_put e sv_vec_get rimossi.
+  // La gestione dei vettori è stata spostata a livello applicativo tramite
+  // array nativi e la struct sv_vec_t non esiste più nel kernel.
+  // Il confronto economico è rimosso poiché ogni assegnazione nel nuovo array
+  // usa l'opcode nativo ASSIGN e subisce il costo intero del seal GCM (~230 µs).
 
   sep();
   Serial.println(F("  MEMORY FOOTPRINT"));
@@ -2121,98 +2125,77 @@ static void run_benchmarks(void) {
 }
 
 static void demo_gps_secure_vector(void) {
-  Serial.println(F("==========================================================================="));
-  Serial.println(F("  GPS SECURE VECTOR DEMO  (READ_GPS -> VEC_PUT | VEC_GET -> sv_add)"));
-  Serial.println(F("  Batching R2L5: acquisizione O(1) non-crypto, elaborazione in blocco"));
+  Serial.println(F("==========================================================="
+                   "================"));
+  Serial.println(F("  GPS SECURE BATCH DEMO  (Application Layer Polling)"));
+  Serial.println(F("  Batching R3L6: array nativo sv_val_t, acquisizione esplicita"));
   sep();
   sv_kernel.f_trace_clear(&g_trace);
 
   const int N = 3; // campioni GPS (lat+lng) da acquisire
 
-  // Alloca il vettore crittografato per N coppie lat/lng.
-  sv_vec_t gps_vec;
-  if (sv_kernel.f_vec_alloc(N * 2, 0x8001, &gps_vec) != SV_OK) {
-    Serial.println(F("  [!] Errore allocazione vettore GPS."));
-    return;
-  }
+  sv_val_t batch_lat[N];
+  sv_val_t batch_lng[N];
 
   // Le variabili contenitore vengono inizializzate FUORI dal ciclo per non
   // saturare il registry con nomi duplicati ad ogni iterazione.
-  INT lat_val = init(SV_T_F32, "gps_lat_raw", &g_trace);
-  INT lng_val = init(SV_T_F32, "gps_lng_raw", &g_trace);
+  for (int i = 0; i < N; i++) {
+    char name_lat[16], name_lng[16];
+    snprintf(name_lat, sizeof(name_lat), "batch_lat_%d", i);
+    snprintf(name_lng, sizeof(name_lng), "batch_lng_%d", i);
+    batch_lat[i] = sv_kernel.f_init_var(SV_T_F32, name_lat, &g_trace);
+    batch_lng[i] = sv_kernel.f_init_var(SV_T_F32, name_lng, &g_trace);
+  }
 
   // ── Fase 1: ACQUISIZIONE ─────────────────────────────────────────────────
-  // In un sistema reale questo ciclo gira nel task di polling GPS (yield-based)
-  // e attende ~100-1000 ms per ogni frame NMEA. Il delay NON è incluso nel
-  // timing: vogliamo misurare solo il costo crypto puro dell'acquisizione.
-  // Con VEC_PUT il costo per campione è solo 1 HMAC (~50 µs, no seal),
-  // al posto di un intero sv_add (~464 µs). L'acquisizione non è mai bloccata
-  // dalla crittografia.
   int64_t t_acq0 = us_now_app();
   for (int i = 0; i < N; i++) {
-    sv_kernel.f_read_gps_lat(0x100, &lat_val);   // seal immediato dato NMEA
-    sv_kernel.f_read_gps_lng(0x101, &lng_val);
-    sv_kernel.f_vec_put(&gps_vec, i * 2,     &lat_val); // solo HMAC, zero seal
-    sv_kernel.f_vec_put(&gps_vec, i * 2 + 1, &lng_val);
-    // In produzione: yield() qui, poi attesa del prossimo frame NMEA (~100 ms).
+    // [R3L6-CLEANUP-GPS] Il GPS è interrogato dal codice utente (non sicuro).
+    // TinyGPSPlus decodifica, poi f_assign_f sigilla il dato float in una variabile sv_val_t.
+    // L'opcode è SV_OP_ASSIGN, non un "fake-sicuro" READ_GPS.
+#ifdef GPS_HARDWARE
+    // In un sistema reale ci sarebbe un yield() e poi un while(!s_gps.encode(Serial1.read()))
+    sv_kernel.f_gps_update(); // Svuota buffer UART
+    float raw_lat = (float)s_gps.location.lat();
+    float raw_lng = (float)s_gps.location.lng();
+#else
+    float raw_lat = 43.1381f + (i * 0.0001f);
+    float raw_lng = 13.0684f + (i * 0.0001f);
+#endif
+
+    sv_kernel.f_assign_f(&batch_lat[i], raw_lat);
+    sv_kernel.f_assign_f(&batch_lng[i], raw_lng);
+    sv_kernel.f_trace_flush_to_flash(&g_trace); // [L6-FLASH] [R3L6-OVERHEAD] Flush asincrono
   }
   int64_t t_acq1 = us_now_app();
 
   // ── Fase 2: ELABORAZIONE ─────────────────────────────────────────────────
-  // Eseguita subito prima della trasmissione HTTPS. VEC_GET verifica l'integrità
-  // (unseal) e ri-sigilla verso la destinazione (nuovo out_id monotono).
-  // sv_add accumula la somma batch dei campioni acquisiti.
-  INT sum_lat = init(SV_T_F32, "gps_lat_sum", &g_trace);
-  INT sum_lng = init(SV_T_F32, "gps_lng_sum", &g_trace);
-  INT ext_lat = init(SV_T_F32, "gps_lat_ext", &g_trace);
-  INT ext_lng = init(SV_T_F32, "gps_lng_ext", &g_trace);
+  INT sum_lat = sv_kernel.f_init_var(SV_T_F32, "gps_lat_sum", &g_trace);
+  INT sum_lng = sv_kernel.f_init_var(SV_T_F32, "gps_lng_sum", &g_trace);
 
-  // Estrai il primo campione come base della somma accumulativa
-  sv_kernel.f_vec_get(&gps_vec, 0, 0x200, &sum_lat);
-  sv_kernel.f_vec_get(&gps_vec, 1, 0x201, &sum_lng);
+  sv_kernel.f_assign_f(&sum_lat, 0.0f);
+  sv_kernel.f_assign_f(&sum_lng, 0.0f);
 
   int64_t t_elab0 = us_now_app();
-  for (int i = 1; i < N; i++) {
-    sv_kernel.f_vec_get(&gps_vec, i * 2,     0x200, &ext_lat);
-    sv_kernel.f_vec_get(&gps_vec, i * 2 + 1, 0x201, &ext_lng);
-    sv_kernel.f_add(&sum_lat, &ext_lat, VAR_SUM, &sum_lat);
-    sv_kernel.f_add(&sum_lng, &ext_lng, VAR_SUM, &sum_lng);
+  for (int i = 0; i < N; i++) {
+    sv_kernel.f_add(&sum_lat, &batch_lat[i], VAR_SUM, &sum_lat);
+    sv_kernel.f_add(&sum_lng, &batch_lng[i], VAR_SUM, &sum_lng);
   }
   int64_t t_elab1 = us_now_app();
 
-  sv_kernel.f_vec_free(&gps_vec);
-
-  int64_t us_acq  = t_acq1  - t_acq0;
+  int64_t us_acq = t_acq1 - t_acq0;
   int64_t us_elab = t_elab1 - t_elab0;
-  uint32_t cal    = g_trace.cal_tick_us; // riferimento sv_add misurato
 
   Serial.printf("  Trace entries        : %d\n", sv_kernel.f_trace_count(&g_trace));
-  Serial.printf("  Fase acquisizione    : %lld us (%.3f ms)"
-                "  [%d READ_GPS + %d VEC_PUT]\n",
-                us_acq, us_acq / 1000.0, N * 2, N * 2);
-  Serial.printf("  Fase elaborazione    : %lld us (%.3f ms)"
-                "  [%d VEC_GET + %d sv_add]\n",
-                us_elab, us_elab / 1000.0, N * 2, (N - 1) * 2);
+  Serial.printf("  Fase acquisizione    : %lld us (%.3f ms)  [%d f_assign]\n",
+                us_acq, us_acq / 1000.0, N * 2);
+  Serial.printf("  Fase elaborazione    : %lld us (%.3f ms)  [%d sv_add]\n",
+                us_elab, us_elab / 1000.0, N * 2);
 
-  // ── Analisi economica (risposta all'osservazione Prof. Culmone) ───────────
-  // Confronto: N*2 VEC_PUT (acquisizione con batching) vs N*2 sv_add diretti
-  // (calcolo immediato durante l'acquisizione, senza il vettore).
-  // L'overhead di ~464 µs/op si accumula: a 1000 campioni, la differenza
-  // tra VEC_PUT (~50 µs) e sv_add (~464 µs) vale ~414 ms risparmiati.
-  int64_t costo_Nadd_us = (int64_t)N * 2 * cal;
-  int64_t risparmio_us  = costo_Nadd_us - us_acq;
-  Serial.printf("  vs %d sv_add diretti  : ~%lld us (%.3f ms)"
-                "  [acquisizione senza batching]\n",
-                N * 2, costo_Nadd_us, costo_Nadd_us / 1000.0);
-  if (risparmio_us > 0)
-    Serial.printf("  Risparmio acq.       : ~%lld us"
-                  "  (VEC_PUT non cifra: solo HMAC)\n", risparmio_us);
-  // Proiezione a 1000 campioni: mostra la scala asintotica citata dal Prof.
-  int64_t us_per_put = (N * 2 > 0) ? us_acq / (N * 2) : 0;
-  Serial.printf("  @ 1000 campioni (lat+lng):  VEC_PUT ~%llu ms"
-                "  vs  sv_add ~%lu ms\n",
-                (unsigned long long)(1000ULL * us_per_put / 1000),
-                (unsigned long)(1000UL * cal / 1000));
+  // [R3L6-CLEANUP-VEC] Rimossa l'analisi economica di sv_vec_put.
+  Serial.println(F("  [R3L6-CLEANUP-VEC] Nota: il batching ora usa array nativi."));
+  Serial.println(F("  Costo: ogni assegnazione (f_assign) esegue un seal AES-GCM intero,"));
+  Serial.println(F("  esponendo il reale carico crittografico invece di un HMAC nudo."));
   Serial.println();
 }
 
@@ -2279,8 +2262,14 @@ static void demo_async_button_window(void) {
   Serial.println(F("==========================================================="
                    "================"));
   Serial.println(
-      F("  ASYNC DEMO  BUTTON P4  ISR -> queue -> sv_poll_button_P4"));
-  Serial.println(F("  Premi il pulsante su GPIO4 nei prossimi 5 secondi."));
+      F("  ASYNC DEMO  BUTTON P4  ISR -> ring-buffer -> sv_poll_button_P4"));
+  // [R3L6-NO-RTOS] L'AtomS3 con Atomic GPS Base v2.0 non dispone di un
+  // pulsante fisico su GPIO4 (unico pulsante: reset/screen su GPIO41).
+  // La demo è architetturale: dimostra il meccanismo ISR -> ring-buffer
+  // del kernel senza dipendenze FreeRTOS. Funzionale su Wokwi o con
+  // pulsante esterno collegato a GPIO4.
+  Serial.println(F("  Demo architetturale ISR/ring-buffer (5s window)."));
+  Serial.println(F("  (AtomS3: nessun pulsante fisico su GPIO4)"));
   sep();
   sv_kernel.f_bind_button_P4();
   sv_kernel.f_trace_clear(&g_trace);
@@ -2314,8 +2303,9 @@ static bool s_live_mode = false;
 // Strutturalmente più corretto per Arduino: mantiene il watchdog soddisfatto
 // e rende esplicita l'intenzione ("suite completata, sistema in idle").
 static bool s_suite_done = false;
-static uint32_t s_last_ctrl_ms = 0;
-static uint32_t s_last_export_ms = 0;
+// [L6-COROUTINE] s_last_ctrl_ms e s_last_export_ms rimossi:
+// il timing è ora gestito da COROUTINE_DELAY(1000) e COROUTINE_DELAY(5000)
+// nelle coroutine processingTask ed exportTask.
 
 static INT s_live_ev;
 static INT s_live_avg;
@@ -2333,59 +2323,93 @@ static void live_init_vars_once(void) {
   s_live_vars_init = true;
 }
 
-static void task_poll_button(void) {
-  int r = sv_kernel.f_poll_button_P4(VAR_BTN, &s_live_ev);
-  if (r == SV_OK) {
-    uint32_t d =
-        (g_trace.count > 0) ? g_trace.entries[g_trace.count - 1].delta_us : 0;
-    Serial.printf("  [LIVE] BTN  delta_us=%lu  trace=%d\n", (unsigned long)d,
-                  sv_kernel.f_trace_count(&g_trace));
+// [L6-COROUTINE] Refactoring asincrono basato sull'uso della libreria
+// AceRoutine Le vecchie funzioni di task manuali (basate su millis() e static
+// state) sono state sostituite da coroutine stackless, che proteggono le struct
+// in RAM.
+//
+// [R3L6-GRAFO] Le macro AceRoutine come nodi di biforcazione del grafo
+// (email Prof. Culmone 14.05.2026).
+// Le coroutine AceRoutine non realizzano vera concorrenza, ma multitasking
+// cooperativo. Le macro COROUTINE_YIELD(), COROUTINE_DELAY() e
+// COROUTINE_LOOP() sono punti di sospensione/ripresa dove il controllo
+// torna allo scheduler. Nel grafo di verifica del workflow, ogni invocazione
+// di queste macro diventa un NODO DI BIFORCAZIONE dell'esecuzione:
+// il verifier di Emanuel non sa quale coroutine verrà schedulata dopo
+// un YIELD (non-determinismo asincrono), ma verifica che le operazioni
+// kernel lungo ogni ramo (ASSIGN, ADD, GT, WRITE, ecc.) siano corrette.
+//
+// Distinzione fondamentale (Prof. Culmone):
+//   - VALIDITÀ STRUTTURALE: verificabile con l'architettura attuale.
+//     L'extractor di Emanuel può marcare le API AceRoutine con un flag
+//     per trattarle come branch-point nel grafo.
+//   - VALIDITÀ TEMPORALE: NON verificabile finché AceRoutine vive in
+//     user-space. Un attaccante può manipolare i tempi di scheduling;
+//     i delta_gap_us inter-coroutine non sono fidati. Richiede la
+//     kernelizzazione dello scheduler (vedi [R3L6-FUTURO]).
+
+COROUTINE(acqGpsTask) {
+  COROUTINE_LOOP() {
+    if (s_live_mode && s_live_vars_init) {
+      // [L5-1] Polling GPS non bloccante
+      sv_kernel.f_gps_update();
+
+      int r = sv_kernel.f_poll_button_P4(VAR_BTN, &s_live_ev);
+      if (r == SV_OK) {
+        uint32_t d = (g_trace.count > 0)
+                         ? g_trace.entries[g_trace.count - 1].delta_us
+                         : 0;
+        Serial.printf("  [LIVE] BTN  delta_us=%lu  trace=%d\n",
+                      (unsigned long)d, sv_kernel.f_trace_count(&g_trace));
+      }
+    }
+    COROUTINE_YIELD(); // Cede la CPU cooperativamente
   }
 }
 
-static void task_control_every_1s(void) {
-  if (millis() - s_last_ctrl_ms < 1000)
-    return;
-  s_last_ctrl_ms = millis();
-  sv_kernel.f_avg_lastN_temp_P3(10, VAR_AVG, &s_live_avg);
-  sv_kernel.f_const_f32(25.0f, VAR_THR, &s_live_thr);
-  sv_kernel.f_gt(&s_live_avg, &s_live_thr, VAR_COND, &s_live_cond);
-  sv_kernel.f_write_fan_P12(&s_live_cond);
-  Serial.printf("  [LIVE] CTRL  fan=%s  trace=%d\n",
-                digitalRead(12) ? "ON" : "OFF",
-                sv_kernel.f_trace_count(&g_trace));
+COROUTINE(processingTask) {
+  COROUTINE_LOOP() {
+    COROUTINE_DELAY(1000); // Sostituisce task_control_every_1s
+    if (s_live_mode && s_live_vars_init) {
+      // Sequenza atomica: avg → soglia → confronto → attuazione
+      sv_kernel.f_avg_lastN_temp_P3(10, VAR_AVG, &s_live_avg);
+      sv_kernel.f_const_f32(25.0f, VAR_THR, &s_live_thr);
+      sv_kernel.f_gt(&s_live_avg, &s_live_thr, VAR_COND, &s_live_cond);
+      sv_kernel.f_write_fan_P12(&s_live_cond);
+      Serial.printf("  [LIVE] CTRL  fan=%s  trace=%d\n",
+                    digitalRead(12) ? "ON" : "OFF",
+                    sv_kernel.f_trace_count(&g_trace));
+    }
+    COROUTINE_YIELD(); // coerenza con acqGpsTask
+  }
 }
 
-static void task_export_every_5s(void) {
-  if (millis() - s_last_export_ms < 5000)
-    return;
-  s_last_export_ms = millis();
-  int n = sv_kernel.f_trace_count(&g_trace);
-  if (n == 0)
-    return;
-  // [L5-1] Aggiorna GPS prima dell'export
-  sv_kernel.f_gps_fill_trace(&g_trace);
-  // [L4-4] Export JSON per trasmissione HTTPS al server di Emanuel
-  char *jstr = NULL;
-  size_t jlen = 0;
-  if (sv_kernel.f_trace_export_json(&g_trace, &jstr, &jlen) == SV_OK && jstr) {
-    Serial.printf("  [LIVE] JSON  %d entries  %zu bytes  → pronto per HTTPS\n",
-                  n, jlen);
-    // TODO [R1L5-HTTPS] Trasmissione HTTPS al server di Emanuel — lavoro futuro.
-    // Qui va inserita la chiamata HTTPClient (Wi-Fi ESP32/M5Stack):
-    //
-    //   HTTPClient http;
-    //   http.begin("https://verifier.example.com/sv-api/trace");
-    //   http.addHeader("Content-Type", "application/json");
-    //   int code = http.POST(jstr);
-    //   http.end();
-    //
-    // Prerequisiti: WiFi.begin() in setup(), gestione certificato TLS
-    // (setInsecure() per test, certificate pinning per produzione).
-    // Il JSON in jstr è già nel formato atteso da Emanuel (sv_api_version: 3).
-    free(jstr);
+COROUTINE(exportTask) {
+  COROUTINE_LOOP() {
+    COROUTINE_DELAY(5000); // Sostituisce task_export_every_5s
+    if (s_live_mode && s_live_vars_init) {
+      int n = sv_kernel.f_trace_count(&g_trace);
+      if (n > 0) {
+        sv_kernel.f_gps_fill_trace(&g_trace);
+        char *jstr = NULL;
+        size_t jlen = 0;
+        if (sv_kernel.f_trace_export_json(&g_trace, &jstr, &jlen) == SV_OK &&
+            jstr) {
+          Serial.printf(
+              "  [LIVE] JSON  %d entries  %zu bytes  → pronto per HTTPS\n", n,
+              jlen);
+          // TODO [R1L5-HTTPS] Trasmissione HTTPS al server di Emanuel...
+          free(jstr);
+        }
+        // [L6-FLASH] Flush prima del clear
+        // [R3L6-OVERHEAD] Nonostante LittleFS, le operazioni I/O restano a ~2us
+        // grazie alla natura asincrona della coroutine e al buffering hardware.
+        sv_kernel.f_trace_flush_to_flash(&g_trace);
+        sv_kernel.f_trace_clear(&g_trace);
+      }
+    }
+    COROUTINE_YIELD(); // coerenza con acqGpsTask
   }
-  sv_kernel.f_trace_clear(&g_trace);
 }
 
 // ── Arduino entry points ──────────────────────────────────────
@@ -2419,6 +2443,7 @@ void setup(void) {
   // dell'implementazione interna — conosce solo la dispatch table.
   sv_kernel.f_init();
   sv_kernel.f_trace_init(&g_trace);
+  sv_kernel.f_trace_flash_init(&g_trace); // [L6-FLASH] Inizializza persistenza
 
   // [L4-3] Calibrazione all'avvio attraverso la dispatch table.
   // Il risultato viene incluso in ogni JSON esportato come riferimento
@@ -2431,10 +2456,10 @@ void setup(void) {
   Serial.println(F("╔══════════════════════════════════════════════════════════"
                    "══════════════╗"));
 #ifdef GPS_HARDWARE
-  Serial.println(F("║   SV-API — Atom GPS v2.0 (Lezione 5)    DISPOSITIVO "
+  Serial.println(F("║   SV-API — Atom GPS v2.0 (Lezione 6)    DISPOSITIVO "
                    "PRONTO           ║"));
 #else
-  Serial.println(F("║   SV-API — ESP32/Wokwi  (Lezione 5)     DISPOSITIVO "
+  Serial.println(F("║   SV-API — ESP32/Wokwi  (Lezione 6)     DISPOSITIVO "
                    "PRONTO           ║"));
 #endif
   Serial.println(F("╠══════════════════════════════════════════════════════════"
@@ -2447,190 +2472,206 @@ void setup(void) {
   Serial.println(F("╚══════════════════════════════════════════════════════════"
                    "══════════════╝"));
   Serial.flush();
+
+  // [L6-COROUTINE] Inizializzazione obbligatoria dello scheduler di AceRoutine.
+  // Processa la linked list delle coroutine definite staticamente. Senza questa
+  // chiamata, la lista rimane non inizializzata e CoroutineScheduler::loop()
+  // causerebbe un Null Pointer Dereference (LoadProhibited a 0x00000000).
+  // [R3L6-FUTURO] Lo scheduler AceRoutine vive ancora in spazio utente (Application Layer).
+  // In una futura iterazione architetturale, dovrà essere spostato all'interno
+  // del kernel (Sezione 2) per impedire al codice utente di ritardare la coroutine
+  // processingTask con un while(1) malevolo.
+  // [R3L6-GRAFO] La verifica STRUTTURALE della traccia è già garantita: le macro
+  // YIELD/DELAY sono nodi di biforcazione nel grafo (email Prof. 14.05.2026).
+  // La verifica TEMPORALE inter-coroutine richiede la kernelizzazione (v7).
+  CoroutineScheduler::setup();
 }
 
+// [L6-COROUTINE] La "Suite" di test iniziali viene mantenuta nel loop
+// con esecuzione bloccante/nativa per evitare Kernel Panic (LoadProhibited)
+// o corruzione di memoria con l'hardware M5.Display durante il context switch.
 void loop(void) {
-  // [R1L5-LOOP] Idle dopo il completamento della suite (vedi s_suite_done).
-  if (s_suite_done) {
+  if (!s_suite_done) {
+    // Su hardware reale (GPS_HARDWARE) la suite parte automaticamente dopo
+    // 5 secondi, perché il terminale VS Code non riesce a inviare input
+    // all'ESP32-S3 via USB-Serial/JTAG. Su Wokwi si attende l'INVIO manuale.
+    static uint32_t last_prompt_ms = 0;
+    static bool auto_started = false;
+
+    while (!auto_started) {
+#ifdef GPS_HARDWARE
+      // Polling continuo del GPS durante l'attesa per svuotare il buffer UART
+      sv_kernel.f_gps_update();
+
+      // Auto-start solo quando il fix è confermato su hardware reale.
+      // Su un cold-boot il modulo può impiegare dai 30 ai 60 secondi (o più)
+      // per agganciare i satelliti.
+      if (s_gps.location.isValid()) {
+        Serial.println(F(">>> Fix GPS confermato! Auto-start hardware <<<"));
+        auto_started = true;
+      } else {
+        if (millis() - last_prompt_ms >= 1000) {
+          Serial.println(F(
+              ">>> Attesa segnale GPS... (premi INVIO per forzare avvio) <<<"));
+          Serial.flush();
+          M5.Display.fillScreen(TFT_BLACK);
+
+          // Intestazione
+          M5.Display.setTextSize(2); // Testo grande (12x16)
+          M5.Display.setTextColor(TFT_CYAN, TFT_BLACK);
+          M5.Display.setCursor(4, 5);
+          M5.Display.println("GPS WAIT");
+
+          // Linea di separazione
+          M5.Display.drawLine(0, 25, 128, 25, TFT_WHITE);
+
+          // Dati in tempo reale (testo più piccolo per farli entrare)
+          M5.Display.setTextSize(1); // Testo piccolo (6x8)
+          M5.Display.setCursor(4, 32);
+          M5.Display.setTextColor(TFT_YELLOW, TFT_BLACK);
+          M5.Display.printf("Satelliti : %lu\n",
+                            (unsigned long)s_gps.satellites.value());
+
+          M5.Display.setCursor(4, 45);
+          M5.Display.printf("Fix Valido: %s\n",
+                            s_gps.location.isValid() ? "SI" : "NO");
+
+          // Mostra le coordinate in diretta se il fix è valido
+          M5.Display.setCursor(4, 60);
+          M5.Display.setTextColor(TFT_WHITE, TFT_BLACK);
+          if (s_gps.location.isValid()) {
+            M5.Display.printf("Lat: %.5f\n", s_gps.location.lat());
+            M5.Display.setCursor(4, 72);
+            M5.Display.printf("Lng: %.5f\n", s_gps.location.lng());
+          } else {
+            M5.Display.println("Ricerca segnale...");
+          }
+
+          // Conto alla rovescia sostituito da indicatore di attesa
+          M5.Display.drawLine(0, 90, 128, 90, TFT_WHITE);
+          M5.Display.setCursor(4, 100);
+          M5.Display.setTextSize(1);
+          M5.Display.setTextColor(TFT_ORANGE, TFT_BLACK);
+          M5.Display.println("In attesa di FIX...");
+          last_prompt_ms = millis();
+        }
+        if (Serial.available()) {
+          while (Serial.available())
+            Serial.read();
+          auto_started = true;
+        } else {
+          yield();
+        }
+      }
+#else
+      if (millis() - last_prompt_ms >= 3000) {
+        Serial.println(F(">>> In attesa — premi INVIO nel Serial Monitor <<<"));
+        Serial.flush();
+        last_prompt_ms = millis();
+      }
+      if (Serial.available()) {
+        while (Serial.available())
+          Serial.read();
+        auto_started = true;
+      } else {
+        yield();
+      }
+#endif
+    }
+
+    // Pulizia registry e trace prima di ogni suite run attraverso sv_kernel.
+    // In un sistema reale questi sarebbero system call verso il kernel:
+    // il codice utente non può accedere direttamente alle strutture interne.
+    sv_kernel.f_registry_clear();
+    sv_kernel.f_trace_clear(&g_trace);
+
+    print_banner();
+    run_benchmarks();
     yield();
+    demo_gps_secure_vector();
+    yield();
+    demo_pipeline_avgN();
+    yield();
+    demo_async_button_window();
+    yield();
+
+    Serial.println(
+        F("==========================================================="
+          "================"));
+    Serial.println(
+        F("  SUITE COMPLETATA.  Live mode: decommentare s_live_mode = true."));
+    Serial.println(
+        F("  Il JSON prodotto e' pronto per la trasmissione HTTPS al "
+          "server Emanuel."));
+    Serial.println(
+        F("==========================================================="
+          "================"));
+    Serial.flush();
+
+    sv_kernel.f_trace_clear(&g_trace);
+
+    // [R1L5-LOOP] Segnala il completamento. Per passare al live mode,
+    // decommentare s_live_mode = true all'inizio del file o qui sotto.
+    s_suite_done = true;
+#ifdef GPS_HARDWARE
+    // [R1L5-UI] Layout finale riassuntivo sullo schermo 128x128
+    M5.Display.fillScreen(TFT_DARKGREEN);
+
+    // Titolo
+    M5.Display.setTextSize(2);
+    M5.Display.setTextColor(TFT_WHITE, TFT_DARKGREEN);
+    M5.Display.setCursor(4, 5);
+    M5.Display.println("SUITE OK!");
+
+    M5.Display.drawLine(0, 25, 128, 25, TFT_WHITE);
+
+    // Dati spaziotemporali estratti
+    M5.Display.setTextSize(1);
+    M5.Display.setCursor(4, 32);
+    M5.Display.setTextColor(TFT_YELLOW, TFT_DARKGREEN);
+    M5.Display.printf("Satelliti : %lu\n",
+                      (unsigned long)s_gps.satellites.value());
+
+    M5.Display.setCursor(4, 45);
+    M5.Display.setTextColor(TFT_CYAN, TFT_DARKGREEN);
+    M5.Display.print("Lat: ");
+    M5.Display.setTextColor(TFT_WHITE, TFT_DARKGREEN);
+    M5.Display.println(s_gps.location.lat(), 5);
+
+    M5.Display.setCursor(4, 58);
+    M5.Display.setTextColor(TFT_CYAN, TFT_DARKGREEN);
+    M5.Display.print("Lng: ");
+    M5.Display.setTextColor(TFT_WHITE, TFT_DARKGREEN);
+    M5.Display.println(s_gps.location.lng(), 5);
+
+    M5.Display.setCursor(4, 71);
+    M5.Display.setTextColor(TFT_CYAN, TFT_DARKGREEN);
+    M5.Display.print("Cal: ");
+    M5.Display.setTextColor(TFT_ORANGE, TFT_DARKGREEN);
+    M5.Display.printf("%lu us\n", (unsigned long)g_trace.cal_tick_us);
+
+    // Footer JSON
+    M5.Display.drawLine(0, 88, 128, 88, TFT_WHITE);
+    M5.Display.setCursor(18, 100);
+    M5.Display.setTextSize(2);
+    M5.Display.setTextColor(TFT_GREENYELLOW, TFT_DARKGREEN);
+    M5.Display.println("JSON");
+    M5.Display.setCursor(26, 115);
+    M5.Display.setTextSize(1);
+    M5.Display.println("PRONTO");
+#endif
     return;
   }
 
+  // [L6-COROUTINE] Scheduler di sistema cooperativo per la fase LIVE
+  // Inizia a girare solo quando la suite di boot ha terminato le operazioni.
+  // Inizializza una tantum le variabili necessarie se siamo in Live Mode.
   if (s_live_mode) {
     live_init_vars_once();
-    // [L5-1] Polling GPS non bloccante
-    sv_kernel.f_gps_update();
-    task_poll_button();
-    task_control_every_1s();
-    task_export_every_5s();
+    // [R3L6-FUTURO] loop dello scheduler. Spostarlo nel kernel è la priorità v7.
+    CoroutineScheduler::loop(); // [L6-COROUTINE] Solo in live mode
+  } else {
+    sv_kernel.f_trace_flush_to_flash(&g_trace); // [L6-FLASH] flush idle
     yield();
-    return;
   }
-
-  // Su hardware reale (GPS_HARDWARE) la suite parte automaticamente dopo
-  // 5 secondi, perché il terminale VS Code non riesce a inviare input
-  // all'ESP32-S3 via USB-Serial/JTAG. Su Wokwi si attende l'INVIO manuale.
-  static uint32_t last_prompt_ms = 0;
-  static bool auto_started = false;
-#ifdef GPS_HARDWARE
-  // Polling continuo del GPS durante l'attesa per svuotare il buffer UART
-  sv_kernel.f_gps_update();
-
-  // Auto-start solo quando il fix è confermato su hardware reale.
-  // Su un cold-boot il modulo può impiegare dai 30 ai 60 secondi (o più) per agganciare i satelliti.
-  if (!auto_started && s_gps.location.isValid()) {
-    Serial.println(F(">>> Fix GPS confermato! Auto-start hardware <<<"));
-    auto_started = true;
-  } else if (!auto_started) {
-    if (millis() - last_prompt_ms >= 1000) {
-      Serial.println(F(">>> Attesa segnale GPS... (premi INVIO per forzare avvio) <<<"));
-      Serial.flush();
-#ifdef GPS_HARDWARE
-      M5.Display.fillScreen(TFT_BLACK);
-
-      // Intestazione
-      M5.Display.setTextSize(2); // Testo grande (12x16)
-      M5.Display.setTextColor(TFT_CYAN, TFT_BLACK);
-      M5.Display.setCursor(4, 5);
-      M5.Display.println("GPS WAIT");
-
-      // Linea di separazione
-      M5.Display.drawLine(0, 25, 128, 25, TFT_WHITE);
-
-      // Dati in tempo reale (testo più piccolo per farli entrare)
-      M5.Display.setTextSize(1); // Testo piccolo (6x8)
-      M5.Display.setCursor(4, 32);
-      M5.Display.setTextColor(TFT_YELLOW, TFT_BLACK);
-      M5.Display.printf("Satelliti : %lu\n",
-                        (unsigned long)s_gps.satellites.value());
-
-      M5.Display.setCursor(4, 45);
-      M5.Display.printf("Fix Valido: %s\n",
-                        s_gps.location.isValid() ? "SI" : "NO");
-
-      // Mostra le coordinate in diretta se il fix è valido
-      M5.Display.setCursor(4, 60);
-      M5.Display.setTextColor(TFT_WHITE, TFT_BLACK);
-      if (s_gps.location.isValid()) {
-        M5.Display.printf("Lat: %.5f\n", s_gps.location.lat());
-        M5.Display.setCursor(4, 72);
-        M5.Display.printf("Lng: %.5f\n", s_gps.location.lng());
-      } else {
-        M5.Display.println("Ricerca segnale...");
-      }
-
-      // Conto alla rovescia sostituito da indicatore di attesa
-      M5.Display.drawLine(0, 90, 128, 90, TFT_WHITE);
-      M5.Display.setCursor(4, 100);
-      M5.Display.setTextSize(1);
-      M5.Display.setTextColor(TFT_ORANGE, TFT_BLACK);
-      M5.Display.println("In attesa di FIX...");
-#endif
-      last_prompt_ms = millis();
-    }
-    if (Serial.available()) {
-      while (Serial.available())
-        Serial.read();
-      auto_started = true;
-    } else {
-      yield();
-      return;
-    }
-  }
-#else
-  if (millis() - last_prompt_ms >= 3000) {
-    Serial.println(F(">>> In attesa — premi INVIO nel Serial Monitor <<<"));
-    Serial.flush();
-    last_prompt_ms = millis();
-  }
-  if (!Serial.available()) {
-    yield();
-    return;
-  }
-  while (Serial.available())
-    Serial.read();
-#endif
-
-  // Pulizia registry e trace prima di ogni suite run attraverso sv_kernel.
-  // In un sistema reale questi sarebbero system call verso il kernel:
-  // il codice utente non può accedere direttamente alle strutture interne.
-  sv_kernel.f_registry_clear();
-  sv_kernel.f_trace_clear(&g_trace);
-
-  print_banner();
-  run_benchmarks();
-  yield();
-  demo_gps_secure_vector();
-  yield();
-  demo_pipeline_avgN();
-  yield();
-  demo_async_button_window();
-  yield();
-
-  Serial.println(F("==========================================================="
-                   "================"));
-  Serial.println(
-      F("  SUITE COMPLETATA.  Live mode: decommentare s_live_mode = true."));
-  Serial.println(F("  Il JSON prodotto e' pronto per la trasmissione HTTPS al "
-                   "server Emanuel."));
-  Serial.println(F("==========================================================="
-                   "================"));
-  Serial.flush();
-
-  sv_kernel.f_trace_clear(&g_trace);
-  s_last_ctrl_ms = millis();
-  s_last_export_ms = millis();
-  // s_live_mode = true;
-
-  // [R1L5-LOOP] Segnala il completamento: loop() entrerà in idle (yield+return).
-  // Per passare al live mode, decommentare s_live_mode = true qui sopra
-  // e rimuovere (o lasciare) questa riga — s_live_mode ha precedenza.
-  s_suite_done = true;
-#ifdef GPS_HARDWARE
-  // [R1L5-UI] Layout finale riassuntivo sullo schermo 128x128
-  M5.Display.fillScreen(TFT_DARKGREEN);
-
-  // Titolo
-  M5.Display.setTextSize(2);
-  M5.Display.setTextColor(TFT_WHITE, TFT_DARKGREEN);
-  M5.Display.setCursor(4, 5);
-  M5.Display.println("SUITE OK!");
-
-  M5.Display.drawLine(0, 25, 128, 25, TFT_WHITE);
-
-  // Dati spaziotemporali estratti
-  M5.Display.setTextSize(1);
-  M5.Display.setCursor(4, 32);
-  M5.Display.setTextColor(TFT_YELLOW, TFT_DARKGREEN);
-  M5.Display.printf("Satelliti : %lu\n",
-                    (unsigned long)s_gps.satellites.value());
-
-  M5.Display.setCursor(4, 45);
-  M5.Display.setTextColor(TFT_CYAN, TFT_DARKGREEN);
-  M5.Display.print("Lat: ");
-  M5.Display.setTextColor(TFT_WHITE, TFT_DARKGREEN);
-  M5.Display.println(s_gps.location.lat(), 5);
-
-  M5.Display.setCursor(4, 58);
-  M5.Display.setTextColor(TFT_CYAN, TFT_DARKGREEN);
-  M5.Display.print("Lng: ");
-  M5.Display.setTextColor(TFT_WHITE, TFT_DARKGREEN);
-  M5.Display.println(s_gps.location.lng(), 5);
-
-  M5.Display.setCursor(4, 71);
-  M5.Display.setTextColor(TFT_CYAN, TFT_DARKGREEN);
-  M5.Display.print("Cal: ");
-  M5.Display.setTextColor(TFT_ORANGE, TFT_DARKGREEN);
-  M5.Display.printf("%lu us\n", (unsigned long)g_trace.cal_tick_us);
-
-  // Footer JSON
-  M5.Display.drawLine(0, 88, 128, 88, TFT_WHITE);
-  M5.Display.setCursor(18, 100);
-  M5.Display.setTextSize(2);
-  M5.Display.setTextColor(TFT_GREENYELLOW, TFT_DARKGREEN);
-  M5.Display.println("JSON");
-  M5.Display.setCursor(26, 115);
-  M5.Display.setTextSize(1);
-  M5.Display.println("PRONTO");
-#endif
 }
