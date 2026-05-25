@@ -1,110 +1,57 @@
-from cfg_nodes import WorkflowNode
-from cfg_nodes import WorkflowEdge
-
-from complexity_model import build_complexity
-
-
-class WorkflowGraphBuilder:
+class GraphBuilder:
 
     def __init__(self):
 
-        self.nodes = []
+        pass
 
-        self.edges = []
+    # ==========================================
+    # BUILD GRAPH
+    # ==========================================
 
-        self.node_counter = 0
+    def build(self, sequence):
 
-        self.prev_node = None
+        nodes = []
+        edges = []
 
-    # ========================================
-    # ADD NODE
-    # ========================================
+        # --------------------------------------
+        # CREATE NODES
+        # --------------------------------------
 
-    def add_node(
-            self,
-            node_type,
-            name
-    ):
+        for i, api in enumerate(sequence):
 
-        node = WorkflowNode(
+            node = {
 
-            self.node_counter,
+                "id": i,
+                "label": api
 
-            node_type,
+            }
 
-            name
-        )
+            nodes.append(node)
 
-        self.nodes.append(node)
+        # --------------------------------------
+        # CREATE EDGES
+        # --------------------------------------
 
-        self.node_counter += 1
+        for i in range(len(sequence) - 1):
 
-        return node.id
+            edge = [
 
-    # ========================================
-    # ADD EDGE
-    # ========================================
+                sequence[i],
+                sequence[i + 1]
 
-    def add_edge(
-            self,
-            from_id,
-            to_id,
-            complexity=None
-    ):
-
-        edge = WorkflowEdge(
-
-            from_id,
-
-            to_id,
-
-            complexity
-        )
-
-        self.edges.append(edge)
-
-    # ========================================
-    # CONNECT NODE
-    # ========================================
-
-    def connect_node(
-            self,
-            node_id,
-            complexity=None
-    ):
-
-        if self.prev_node is not None:
-
-            self.add_edge(
-
-                self.prev_node,
-
-                node_id,
-
-                complexity
-            )
-
-        self.prev_node = node_id
-
-    # ========================================
-    # EXPORT JSON
-    # ========================================
-
-    def export(self):
-
-        return {
-
-            "nodes": [
-
-                n.to_dict()
-
-                for n in self.nodes
-            ],
-
-            "edges": [
-
-                e.to_dict()
-
-                for e in self.edges
             ]
+
+            edges.append(edge)
+
+        # --------------------------------------
+        # FINAL GRAPH
+        # --------------------------------------
+
+        graph = {
+
+            "nodes": nodes,
+            "edges": edges
+
         }
+
+        return graph

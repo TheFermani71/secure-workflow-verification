@@ -27,51 +27,52 @@ public class WorkflowLoader {
              * Nodes
              */
             JSONArray nodes =
-                    (JSONArray) root.get("nodes");
+                    (JSONArray) root.get(
+                            "nodes"
+                    );
 
             for (Object obj : nodes) {
 
-                JSONObject n =
+                JSONObject node =
                         (JSONObject) obj;
 
-                int id =
-                        ((Long) n.get("id")).intValue();
+                String label =
+                        (String) node.get(
+                                "label"
+                        );
 
-                String type =
-                        (String) n.get("type");
-
-                String name =
-                        (String) n.get("name");
-
-                graph.addNode(
-                        id,
-                        type,
-                        name
-                );
+                graph.addNode(label);
             }
 
             /*
              * Edges
              */
             JSONArray edges =
-                    (JSONArray) root.get("edges");
+                    (JSONArray) root.get(
+                            "edges"
+                    );
 
             for (Object obj : edges) {
 
-                JSONObject e =
-                        (JSONObject) obj;
+                JSONArray edge =
+                        (JSONArray) obj;
 
-                int from =
-                        ((Long) e.get("from")).intValue();
+                String from =
+                        (String) edge.get(0);
 
-                int to =
-                        ((Long) e.get("to")).intValue();
+                String to =
+                        (String) edge.get(1);
 
                 graph.addEdge(
                         from,
                         to
                 );
             }
+
+            /*
+             * Debug
+             */
+            System.out.println();
 
             System.out.println(
                     "[WorkflowLoader] Graph loaded"
@@ -82,9 +83,19 @@ public class WorkflowLoader {
                             + graph.nodes.size()
             );
 
+            int edgeCount = 0;
+
+            for (String node : graph.nodes) {
+
+                edgeCount +=
+                        graph.adjacency
+                                .get(node)
+                                .size();
+            }
+
             System.out.println(
                     " Edges : "
-                            + graph.edges.size()
+                            + edgeCount
             );
 
         } catch (Exception ex) {

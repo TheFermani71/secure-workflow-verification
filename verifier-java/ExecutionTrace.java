@@ -1,32 +1,54 @@
-import java.util.ArrayList;
 import java.util.List;
 
 public class ExecutionTrace {
 
-    /*
-     * SV-API protocol version
-     */
     public int apiVersion;
 
-    /*
-     * Device identifier
-     */
     public String deviceId;
 
-    /*
-     * Calibration reference
-     *
-     * Based on sv_add()
-     */
     public long calTickUs;
 
-    /*
-     * Runtime trace entries
-     */
     public List<TraceEntry> entries;
 
     public ExecutionTrace() {
+    }
 
-        this.entries = new ArrayList<>();
+    public ExecutionTrace(
+            List<TraceEntry> entries,
+            long calTickUs
+    ) {
+
+        this.entries =
+                entries;
+
+        this.calTickUs =
+                calTickUs;
+    }
+
+    /*
+     * Get entries
+     */
+    public List<TraceEntry> getEntries() {
+
+        return entries;
+    }
+
+    /*
+     * Get calibration tick
+     */
+    public long getCalTickUs() {
+
+        return calTickUs;
+    }
+
+    /*
+     * Debug
+     */
+    @Override
+    public String toString() {
+
+        return "[ExecutionTrace entries="
+                + entries.size()
+                + "]";
     }
 }

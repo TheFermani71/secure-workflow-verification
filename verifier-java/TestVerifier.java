@@ -1,125 +1,93 @@
 public class TestVerifier {
 
+    /*
+     * SELECT GRAPH MODE
+     */
+    private static final boolean COROUTINE_MODE = false;
+
     public static void main(String[] args) {
 
-        System.out.println();
         System.out.println(
                 "========================================"
         );
+
         System.out.println(
-                " SV-API v6 VERIFIER"
+                " SV-API v6 VERIFIER "
         );
+
         System.out.println(
                 "========================================"
         );
 
         /*
-         * Load workflow graph
+         * GRAPH FILE
+         */
+        String graphFile;
+
+        if (COROUTINE_MODE) {
+
+            graphFile =
+                    "../extractor/workflow_graph_coroutine.json";
+
+        } else {
+
+            graphFile =
+                    "../extractor/workflow_graph_sequential.json";
+        }
+
+        /*
+         * TRACE FILE
+         */
+        String traceFile =
+                "../extractor/trace.json";
+
+        /*
+         * LOAD GRAPH
          */
         WorkflowGraph graph =
                 WorkflowLoader.loadGraph(
-                        "../extractor/workflow_graph.json"
+                        graphFile
                 );
 
         /*
-         * Load runtime trace
+         * LOAD TRACE
          */
         ExecutionTrace trace =
-                TraceParser.parse(
-                        "trace.json"
+                TraceParser.parseTrace(
+                        traceFile
                 );
 
         /*
-         * Verifier
+         * VERIFIER
          */
         Verifier verifier =
                 new Verifier();
 
         /*
-         * Workflow validation
+         * VALIDATION
          */
-        System.out.println();
-        System.out.println(
-                "========================================"
-        );
-        System.out.println(
-                " WORKFLOW VALIDATION"
-        );
-        System.out.println(
-                "========================================"
-        );
-
-        boolean workflowOk =
-                verifier.verifyWorkflow(
+        boolean valid =
+                verifier.validateTrace(
                         trace,
                         graph
                 );
 
+        /*
+         * FINAL RESULT
+         */
         System.out.println(
-                workflowOk
-                        ? "[WORKFLOW] VALID"
-                        : "[WORKFLOW] INVALID"
+                "\n========================================"
         );
 
-        /*
-         * Data flow validation
-         */
-        System.out.println();
         System.out.println(
-                "========================================"
+                " FINAL RESULT "
         );
-        System.out.println(
-                " DATA FLOW VALIDATION"
-        );
+
         System.out.println(
                 "========================================"
         );
 
-        boolean dataOk =
-                verifier.verifyDataFlow(
-                        trace
-                );
-
-        System.out.println(
-                dataOk
-                        ? "[DATA FLOW] VALID"
-                        : "[DATA FLOW] INVALID"
-        );
-
-        /*
-         * API timing validation
-         */
-        boolean apiTimingOk =
-                verifier.verifyApiTiming(
-                        trace
-                );
-
-        /*
-         * GAP timing analysis
-         */
-        boolean gapOk =
-                verifier.verifyGapTiming(
-                        trace
-                );
-
-        /*
-         * Final result
-         */
-        System.out.println();
-        System.out.println(
-                "========================================"
-        );
-        System.out.println(
-                " FINAL RESULT"
-        );
-        System.out.println(
-                "========================================"
-        );
-
-        if (workflowOk
-                && dataOk
-                && apiTimingOk
-                && gapOk) {
+        if (valid) {
 
             System.out.println(
                     "[TRACE] VALID"

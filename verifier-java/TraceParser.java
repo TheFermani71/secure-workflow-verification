@@ -1,4 +1,6 @@
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -6,113 +8,144 @@ import org.json.simple.parser.JSONParser;
 
 public class TraceParser {
 
-    public static ExecutionTrace parse(String path) {
+    public static ExecutionTrace parseTrace(
+            String path
+    ) {
 
-        ExecutionTrace trace = new ExecutionTrace();
+        List<TraceEntry> entries =
+                new ArrayList<>();
+
+        long calTickUs = 0;
 
         try {
 
-            JSONParser parser = new JSONParser();
+            JSONParser parser =
+                    new JSONParser();
 
             JSONObject root =
-                    (JSONObject) parser.parse(new FileReader(path));
+                    (JSONObject) parser.parse(
+                            new FileReader(path)
+                    );
 
             /*
-             * Header JSON
+             * Global metadata
              */
-            trace.apiVersion =
-                    ((Long) root.get("sv_api_version")).intValue();
+            long apiVersion =
+                    (Long) root.get(
+                            "sv_api_version"
+                    );
 
-            trace.deviceId =
-                    (String) root.get("device_id");
+            String deviceId =
+                    (String) root.get(
+                            "device_id"
+                    );
 
-            trace.calTickUs =
-                    ((Long) root.get("cal_tick_us")).longValue();
+            calTickUs =
+                    (Long) root.get(
+                            "cal_tick_us"
+                    );
 
             /*
-             * Entries
+             * Trace entries
              */
-            JSONArray entries =
-                    (JSONArray) root.get("entries");
+            JSONArray jsonEntries =
+                    (JSONArray) root.get(
+                            "entries"
+                    );
 
-            for (Object obj : entries) {
+            for (Object obj : jsonEntries) {
 
-                JSONObject e = (JSONObject) obj;
+                JSONObject e =
+                        (JSONObject) obj;
 
-                TraceEntry entry = new TraceEntry();
+                TraceEntry entry =
+                        new TraceEntry();
 
                 entry.seq =
-                        ((Long) e.get("seq")).intValue();
+                        ((Long) e.get(
+                                "seq"
+                        )).intValue();
 
                 entry.op =
-                        ((Long) e.get("op")).intValue();
+                        ((Long) e.get(
+                                "op"
+                        )).intValue();
 
                 entry.opName =
-                        (String) e.get("op_name");
+                        (String) e.get(
+                                "op_name"
+                        );
 
                 entry.outId =
-                        (String) e.get("out_id");
+                        (String) e.get(
+                                "out_id"
+                        );
 
                 entry.in1Id =
-                        (String) e.get("in1_id");
+                        (String) e.get(
+                                "in1_id"
+                        );
 
                 entry.in2Id =
-                        (String) e.get("in2_id");
+                        (String) e.get(
+                                "in2_id"
+                        );
 
                 entry.varId =
-                        ((Long) e.get("var_id")).intValue();
+                        ((Long) e.get(
+                                "var_id"
+                        )).intValue();
 
                 entry.varName =
-                        (String) e.get("var_name");
+                        (String) e.get(
+                                "var_name"
+                        );
 
-                /*
-                 * v6:
-                 * total elapsed time
-                 */
                 entry.deltaUs =
-                        ((Long) e.get("delta_us")).longValue();
+                        (Long) e.get(
+                                "delta_us"
+                        );
 
-                /*
-                 * v6:
-                 * trusted kernel timing
-                 */
                 entry.deltaApiUs =
-                        ((Long) e.get("delta_api_us")).longValue();
-
-                /*
-                 * Derived application timing
-                 */
-                entry.deltaGapUs =
-                        entry.deltaUs - entry.deltaApiUs;
+                        (Long) e.get(
+                                "delta_api_us"
+                        );
 
                 entry.chainTag =
-                        (String) e.get("chain_tag");
+                        (String) e.get(
+                                "chain_tag"
+                        );
 
-                trace.entries.add(entry);
+                entries.add(entry);
             }
+
+            /*
+             * Debug output
+             */
+            System.out.println();
 
             System.out.println(
                     "[TraceParser] Loaded trace:"
             );
 
             System.out.println(
-                    "  API version : "
-                            + trace.apiVersion
+                    " API version : "
+                            + apiVersion
             );
 
             System.out.println(
-                    "  Device      : "
-                            + trace.deviceId
+                    " Device      : "
+                            + deviceId
             );
 
             System.out.println(
-                    "  Entries     : "
-                            + trace.entries.size()
+                    " Entries     : "
+                            + entries.size()
             );
 
             System.out.println(
-                    "  cal_tick_us : "
-                            + trace.calTickUs
+                    " cal_tick_us : "
+                            + calTickUs
             );
 
         } catch (Exception ex) {
@@ -120,6 +153,9 @@ public class TraceParser {
             ex.printStackTrace();
         }
 
-        return trace;
+        return new ExecutionTrace(
+                entries,
+                calTickUs
+        );
     }
 }

@@ -1,40 +1,64 @@
-# ============================================
-# COROUTINE PARSER
-#
-# AceRoutine hooks
-#
-# Coroutine-aware extraction
-# ============================================
+class CoroutineParser:
 
-COROUTINE_MACROS = [
+    def __init__(self):
 
-    "COROUTINE_BEGIN",
+        self.coroutine_macros = [
 
-    "COROUTINE_YIELD",
+            "COROUTINE_BEGIN",
+            "COROUTINE_YIELD",
+            "COROUTINE_DELAY",
+            "COROUTINE_END"
 
-    "COROUTINE_DELAY",
+        ]
 
-    "COROUTINE_LOOP",
+        self.sv_apis = [
 
-    "COROUTINE_END"
-]
+            "INIT",
+            "ASSIGN",
+            "CONST",
+            "READ",
+            "AVG_N",
+            "ADD",
+            "SUB",
+            "MUL",
+            "DIV",
+            "GT",
+            "LT",
+            "EQ",
+            "WRITE"
 
+        ]
 
-def is_coroutine_macro(line):
+    # ==========================================
+    # MAIN PARSER
+    # ==========================================
 
-    for macro in COROUTINE_MACROS:
+    def parse(self, lines):
 
-        if macro in line:
-            return True
+        sequence = []
 
-    return False
+        for line in lines:
 
+            upper = line.upper()
 
-def extract_coroutine_macro(line):
+            # ----------------------------------
+            # Coroutine macros
+            # ----------------------------------
 
-    for macro in COROUTINE_MACROS:
+            for macro in self.coroutine_macros:
 
-        if macro in line:
-            return macro
+                if macro in upper:
 
-    return None
+                    sequence.append(macro)
+
+            # ----------------------------------
+            # Secure APIs
+            # ----------------------------------
+
+            for api in self.sv_apis:
+
+                if api in upper:
+
+                    sequence.append(api)
+
+        return sequence

@@ -1,79 +1,90 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class WorkflowGraph {
 
     /*
-     * Workflow node
+     * Nodes
      */
-    public static class Node {
+    public List<String> nodes;
 
-        public int id;
+    /*
+     * Adjacency list
+     */
+    public Map<String, Set<String>> adjacency;
 
-        public String type;
+    public WorkflowGraph() {
 
-        public String name;
+        nodes =
+                new ArrayList<>();
 
-        public Node(
-                int id,
-                String type,
-                String name
-        ) {
+        adjacency =
+                new HashMap<>();
+    }
 
-            this.id = id;
-            this.type = type;
-            this.name = name;
+    /*
+     * Add node
+     */
+    public void addNode(
+            String node
+    ) {
+
+        if (!nodes.contains(node)) {
+
+            nodes.add(node);
+        }
+
+        if (!adjacency.containsKey(node)) {
+
+            adjacency.put(
+                    node,
+                    new HashSet<>()
+            );
         }
     }
 
     /*
-     * Workflow edge
+     * Add edge
      */
-    public static class Edge {
-
-        public int from;
-
-        public int to;
-
-        public Edge(
-                int from,
-                int to
-        ) {
-
-            this.from = from;
-            this.to = to;
-        }
-    }
-
-    public List<Node> nodes;
-
-    public List<Edge> edges;
-
-    public WorkflowGraph() {
-
-        nodes = new ArrayList<>();
-
-        edges = new ArrayList<>();
-    }
-
-    public void addNode(
-            int id,
-            String type,
-            String name
-    ) {
-
-        nodes.add(
-                new Node(id, type, name)
-        );
-    }
-
     public void addEdge(
-            int from,
-            int to
+            String from,
+            String to
     ) {
 
-        edges.add(
-                new Edge(from, to)
-        );
+        addNode(from);
+
+        addNode(to);
+
+        adjacency
+                .get(from)
+                .add(to);
+    }
+
+    /*
+     * Check edge
+     */
+    public boolean hasEdge(
+            String from,
+            String to
+    ) {
+
+        if (!adjacency.containsKey(from)) {
+
+            return false;
+        }
+
+        return adjacency
+                .get(from)
+                .contains(to);
+    }
+
+    /*
+     * Debug
+     */
+    @Override
+    public String toString() {
+
+        return "[WorkflowGraph nodes="
+                + nodes.size()
+                + "]";
     }
 }
