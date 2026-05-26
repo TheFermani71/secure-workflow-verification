@@ -1,9 +1,31 @@
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class WorkflowPathValidator {
 
     /*
-     * Validate execution path
+     * Validation mode
+     */
+    private boolean relaxedAsyncMode;
+
+    /*
+     * Maximum async depth
+     */
+    private static final int MAX_RELAXED_DEPTH = 4;
+
+    /*
+     * Constructor
+     */
+    public WorkflowPathValidator(
+            boolean relaxedAsyncMode
+    ) {
+
+        this.relaxedAsyncMode =
+                relaxedAsyncMode;
+    }
+
+    /*
+     * Validate workflow path
      */
     public boolean validate(
             ExecutionTrace trace,
@@ -17,20 +39,14 @@ public class WorkflowPathValidator {
         );
 
         System.out.println(
-                " BEHAVIORAL WORKFLOW VALIDATION "
+                " BEHAVIORAL WORKFLOW VALIDATION"
         );
 
         System.out.println(
                 "========================================"
         );
 
-        List<TraceEntry> entries =
-                trace.getEntries();
-
-        /*
-         * Empty trace
-         */
-        if (entries.isEmpty()) {
+        if (trace.entries.size() < 2) {
 
             System.out.println(
                     "[WORKFLOW] Empty trace"
@@ -39,59 +55,174 @@ public class WorkflowPathValidator {
             return false;
         }
 
-        /*
-         * Validate transitions
-         */
-        for (int i = 0; i < entries.size() - 1; i++) {
+        for (int i = 1; i < trace.entries.size(); i++) {
+
+            TraceEntry previous =
+                    trace.entries.get(i - 1);
 
             TraceEntry current =
-                    entries.get(i);
-
-            TraceEntry next =
-                    entries.get(i + 1);
+                    trace.entries.get(i);
 
             String from =
-                    current.opName;
+                    previous.opName;
 
             String to =
-                    next.opName;
+                    current.opName;
 
             /*
-             * Transition check
+             * STRICT EDGE
              */
-            if (!graph.hasEdge(from, to)) {
-
-                System.out.println();
+            if (graph.hasEdge(from, to)) {
 
                 System.out.println(
-                        "[WORKFLOW] INVALID TRANSITION"
+                        "[OK] "
+                                + from
+                                + " -> "
+                                + to
                 );
 
-                System.out.println(
-                        " from : " + from
-                );
-
-                System.out.println(
-                        " to   : " + to
-                );
-
-                return false;
+                continue;
             }
 
+            /*
+             * RELAXED ASYNC MODE
+             */
+            if (relaxedAsyncMode) {
+
+                boolean reachable =
+                        isReachable(
+                                graph,
+                                from,
+                                to,
+                                MAX_RELAXED_DEPTH
+                        );
+
+                if (reachable) {
+
+                    System.out.println(
+                            "[RELAXED OK] "
+                                    + from
+                                    + " -> "
+                                    + to
+                    );
+
+                    continue;
+                }
+            }
+
+            /*
+             * INVALID
+             */
+            System.out.println();
+
             System.out.println(
-                    "[OK] "
+                    "[WORKFLOW] INVALID TRANSITION"
+            );
+
+            System.out.println(
+                    " from : "
                             + from
-                            + " -> "
+            );
+
+            System.out.println(
+                    " to   : "
                             + to
             );
+
+            return false;
         }
 
         System.out.println();
 
-        System.out.println(
-                "[WORKFLOW] VALID"
-        );
+        if (relaxedAsyncMode) {
+
+            System.out.println(
+                    "[WORKFLOW] VALID (RELAXED ASYNC MODE)"
+            );
+
+        } else {
+
+            System.out.println(
+                    "[WORKFLOW] VALID (STRICT MODE)"
+            );
+        }
 
         return true;
+    }
+
+    /*
+     * Graph reachability
+     */
+    private boolean isReachable(
+            WorkflowGraph graph,
+            String current,
+            String target,
+            int depth
+    ) {
+
+        Set<String> visited =
+                new HashSet<>();
+
+        return dfs(
+                graph,
+                current,
+                target,
+                depth,
+                visited
+        );
+    }
+
+    /*
+     * DFS
+     */
+    private boolean dfs(
+            WorkflowGraph graph,
+            String current,
+            String target,
+            int depth,
+            Set<String> visited
+    ) {
+
+        if (depth <= 0) {
+
+            return false;
+        }
+
+        if (current.equals(target)) {
+
+            return true;
+        }
+
+        visited.add(current);
+
+        if (!graph.adjacency.containsKey(current)) {
+
+            return false;
+        }
+
+        for (String next :
+                graph.adjacency.get(current)) {
+
+            if (visited.contains(next)) {
+
+                continue;
+            }
+
+            boolean reachable =
+                    dfs(
+                            graph,
+                            next,
+                            target,
+                            depth - 1,
+                            visited
+                    );
+
+            if (reachable) {
+
+                return true;
+            }
+        }
+
+        return false;
     }
 }

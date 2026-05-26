@@ -1,40 +1,90 @@
 public class Verifier {
 
-    private WorkflowPathValidator workflowValidator;
+    /*
+     * Workflow graph
+     */
+    private WorkflowGraph graph;
+
+    /*
+     * Validators
+     */
+    private WorkflowPathValidator pathValidator;
 
     private ApiTimingValidator apiTimingValidator;
 
     private GapTimingValidator gapTimingValidator;
 
-    private WorkflowGraph graph;
+    /*
+     * Blockchain connector
+     */
+    private BlockchainConnector blockchainConnector;
 
+    /*
+     * Validation mode
+     */
+    private boolean relaxedMode;
+
+    /*
+     * Constructor
+     */
     public Verifier(
-            WorkflowGraph graph
+            WorkflowGraph graph,
+            boolean relaxedMode
     ) {
 
-        this.graph = graph;
+        this.graph =
+                graph;
 
-        workflowValidator =
-                new WorkflowPathValidator();
+        this.relaxedMode =
+                relaxedMode;
 
-        apiTimingValidator =
+        /*
+         * Validators
+         */
+        this.pathValidator =
+                new WorkflowPathValidator(
+                        relaxedMode
+                );
+
+        this.apiTimingValidator =
                 new ApiTimingValidator();
 
-        gapTimingValidator =
+        this.gapTimingValidator =
                 new GapTimingValidator();
+
+        /*
+         * Blockchain connector
+         */
+        this.blockchainConnector =
+                new BlockchainConnector(
+
+                        "http://127.0.0.1:8545",
+
+                        /*
+                         * Hardhat test private key
+                         */
+                        "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+
+                        /*
+                         * Contract address
+                         */
+                        "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+                );
     }
 
+    /*
+     * Main validation pipeline
+     */
     public VerificationResult validateTrace(
-
             ExecutionTrace trace,
-
+            String workflowMode,
             String workflowFile,
-
-            String traceFile,
-
-            String workflowMode
-
+            String traceFile
     ) {
+
+        boolean workflowValid;
+        boolean apiTimingValid;
+        boolean finalValid;
 
         /*
          * ========================================
@@ -42,8 +92,8 @@ public class Verifier {
          * ========================================
          */
 
-        boolean workflowValid =
-                workflowValidator.validate(
+        workflowValid =
+                pathValidator.validate(
                         trace,
                         graph
                 );
@@ -54,14 +104,14 @@ public class Verifier {
          * ========================================
          */
 
-        boolean timingValid =
+        apiTimingValid =
                 apiTimingValidator.validate(
                         trace
                 );
 
         /*
          * ========================================
-         * GAP ANALYSIS
+         * GAP TIMING ANALYSIS
          * ========================================
          */
 
@@ -75,13 +125,14 @@ public class Verifier {
          * ========================================
          */
 
-        boolean finalValid =
-                workflowValid &&
-                timingValid;
+        finalValid =
+                workflowValid
+                        &&
+                        apiTimingValid;
 
         /*
          * ========================================
-         * SHA256 HASHES
+         * HASH GENERATION
          * ========================================
          */
 
@@ -102,33 +153,22 @@ public class Verifier {
          */
 
         System.out.println();
-        System.out.println("========================================");
-        System.out.println(" BLOCKCHAIN ATTESTATION");
-        System.out.println("========================================");
-        System.out.println();
 
-        BlockchainConnector connector =
-                new BlockchainConnector(
+        System.out.println(
+                "========================================"
+        );
 
-                        "http://127.0.0.1:8545",
+        System.out.println(
+                " BLOCKCHAIN ATTESTATION"
+        );
 
-                        /*
-                         * Hardhat Account #0 private key
-                         */
-                        "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+        System.out.println(
+                "========================================"
+        );
 
-                        /*
-                         * Smart contract address
-                         */
-                        "0x5FbDB2315678afecb367f032d93F642f64180aa3"
-                );
-
-        connector.registerVerification(
-
+        blockchainConnector.registerVerification(
                 workflowHash,
-
                 traceHash,
-
                 finalValid
         );
 
@@ -141,7 +181,7 @@ public class Verifier {
         VerificationResult result =
                 new VerificationResult(
 
-                        trace.deviceId,
+                        null,
 
                         workflowMode,
 
@@ -161,12 +201,24 @@ public class Verifier {
          */
 
         System.out.println();
-        System.out.println("========================================");
-        System.out.println(" VERIFICATION RESULT");
-        System.out.println("========================================");
+
+        System.out.println(
+                "========================================"
+        );
+
+        System.out.println(
+                " VERIFICATION RESULT"
+        );
+
+        System.out.println(
+                "========================================"
+        );
+
         System.out.println();
 
-        System.out.println(result);
+        System.out.println(
+                result
+        );
 
         return result;
     }

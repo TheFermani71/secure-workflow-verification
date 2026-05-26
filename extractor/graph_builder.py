@@ -13,6 +13,8 @@ class GraphBuilder:
         nodes = []
         edges = []
 
+        edge_set = set()
+
         # --------------------------------------
         # CREATE NODES
         # --------------------------------------
@@ -29,19 +31,38 @@ class GraphBuilder:
             nodes.append(node)
 
         # --------------------------------------
-        # CREATE EDGES
+        # CREATE DIRECT EDGES
         # --------------------------------------
 
         for i in range(len(sequence) - 1):
 
-            edge = [
+            src = sequence[i]
+            dst = sequence[i + 1]
 
-                sequence[i],
-                sequence[i + 1]
+            edge = (src, dst)
 
-            ]
+            if edge not in edge_set:
 
-            edges.append(edge)
+                edge_set.add(edge)
+
+                edges.append([src, dst])
+
+        # --------------------------------------
+        # CREATE ASYNC / COROUTINE EDGES
+        # --------------------------------------
+
+        for i in range(len(sequence) - 2):
+
+            src = sequence[i]
+            dst = sequence[i + 2]
+
+            edge = (src, dst)
+
+            if edge not in edge_set:
+
+                edge_set.add(edge)
+
+                edges.append([src, dst])
 
         # --------------------------------------
         # FINAL GRAPH

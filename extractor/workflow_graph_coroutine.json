@@ -2199,10 +2199,6 @@
             "ADD"
         ],
         [
-            "ADD",
-            "LT"
-        ],
-        [
             "LT",
             "EQ"
         ],
@@ -2228,18 +2224,6 @@
         ],
         [
             "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
             "DIV"
         ],
         [
@@ -2247,10 +2231,6 @@
             "INIT"
         ],
         [
-            "INIT",
-            "LT"
-        ],
-        [
             "LT",
             "INIT"
         ],
@@ -2261,14 +2241,6 @@
         [
             "READ",
             "READ"
-        ],
-        [
-            "READ",
-            "READ"
-        ],
-        [
-            "READ",
-            "ADD"
         ],
         [
             "ADD",
@@ -2292,27 +2264,11 @@
         ],
         [
             "LT",
-            "LT"
-        ],
-        [
-            "LT",
             "MUL"
         ],
         [
             "MUL",
             "LT"
-        ],
-        [
-            "LT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "READ"
         ],
         [
             "READ",
@@ -2347,19 +2303,11 @@
             "LT"
         ],
         [
-            "LT",
-            "EQ"
-        ],
-        [
             "EQ",
             "ASSIGN"
         ],
         [
             "ASSIGN",
-            "READ"
-        ],
-        [
-            "READ",
             "READ"
         ],
         [
@@ -2371,68 +2319,8 @@
             "LT"
         ],
         [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "MUL"
-        ],
-        [
-            "MUL",
-            "LT"
-        ],
-        [
-            "LT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "MUL"
-        ],
-        [
-            "MUL",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "MUL"
-        ],
-        [
             "MUL",
             "MUL"
-        ],
-        [
-            "MUL",
-            "DIV"
         ],
         [
             "DIV",
@@ -2440,51 +2328,15 @@
         ],
         [
             "LT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
             "ASSIGN"
         ],
         [
             "ASSIGN",
             "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "READ"
-        ],
-        [
-            "READ",
-            "ADD"
-        ],
-        [
-            "ADD",
-            "SUB"
-        ],
-        [
-            "SUB",
-            "MUL"
-        ],
-        [
-            "MUL",
-            "DIV"
         ],
         [
             "DIV",
             "GT"
-        ],
-        [
-            "GT",
-            "LT"
-        ],
-        [
-            "LT",
-            "EQ"
         ],
         [
             "EQ",
@@ -2511,26 +2363,6 @@
             "LT"
         ],
         [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "READ"
-        ],
-        [
             "READ",
             "AVG_N"
         ],
@@ -2539,32 +2371,8 @@
             "ADD"
         ],
         [
-            "ADD",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "INIT"
-        ],
-        [
             "INIT",
             "DIV"
-        ],
-        [
-            "DIV",
-            "LT"
-        ],
-        [
-            "LT",
-            "WRITE"
         ],
         [
             "WRITE",
@@ -2576,39 +2384,15 @@
         ],
         [
             "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
             "CONST"
         ],
         [
             "CONST",
             "INIT"
-        ],
-        [
-            "INIT",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "CONST"
         ],
         [
             "CONST",
             "READ"
-        ],
-        [
-            "READ",
-            "CONST"
         ],
         [
             "CONST",
@@ -2639,20 +2423,8 @@
             "DIV"
         ],
         [
-            "DIV",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "GT"
-        ],
-        [
             "GT",
             "CONST"
-        ],
-        [
-            "CONST",
-            "LT"
         ],
         [
             "LT",
@@ -2663,1080 +2435,96 @@
             "EQ"
         ],
         [
-            "EQ",
-            "CONST"
-        ],
-        [
             "CONST",
             "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "WRITE"
-        ],
-        [
-            "WRITE",
-            "ASSIGN"
         ],
         [
             "ASSIGN",
             "CONST"
         ],
         [
-            "CONST",
-            "EQ"
-        ],
-        [
             "EQ",
             "ADD"
         ],
         [
-            "ADD",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "LT"
-        ],
-        [
-            "LT",
-            "READ"
-        ],
-        [
             "READ",
             "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "CONST"
         ],
         [
             "CONST",
             "ASSIGN"
         ],
         [
-            "ASSIGN",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "READ"
-        ],
-        [
-            "READ",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "WRITE"
-        ],
-        [
             "WRITE",
             "CONST"
-        ],
-        [
-            "CONST",
-            "ADD"
-        ],
-        [
-            "ADD",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "SUB"
-        ],
-        [
-            "SUB",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "MUL"
-        ],
-        [
-            "MUL",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "DIV"
-        ],
-        [
-            "DIV",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "GT"
-        ],
-        [
-            "GT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "LT"
-        ],
-        [
-            "LT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "EQ"
-        ],
-        [
-            "EQ",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "LT"
-        ],
-        [
-            "LT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "DIV"
-        ],
-        [
-            "DIV",
-            "LT"
-        ],
-        [
-            "LT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "READ"
-        ],
-        [
-            "READ",
-            "READ"
-        ],
-        [
-            "READ",
-            "ADD"
         ],
         [
             "ADD",
             "ADD"
         ],
         [
-            "ADD",
-            "SUB"
-        ],
-        [
             "SUB",
             "SUB"
-        ],
-        [
-            "SUB",
-            "MUL"
-        ],
-        [
-            "MUL",
-            "MUL"
-        ],
-        [
-            "MUL",
-            "DIV"
         ],
         [
             "DIV",
             "DIV"
         ],
         [
-            "DIV",
-            "GT"
-        ],
-        [
             "GT",
             "GT"
-        ],
-        [
-            "GT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "EQ"
         ],
         [
             "EQ",
             "EQ"
         ],
         [
-            "EQ",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "WRITE"
-        ],
-        [
             "WRITE",
             "WRITE"
-        ],
-        [
-            "WRITE",
-            "AVG_N"
         ],
         [
             "AVG_N",
             "AVG_N"
         ],
         [
-            "AVG_N",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "LT"
-        ],
-        [
-            "LT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "ADD"
-        ],
-        [
-            "ADD",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "ADD"
-        ],
-        [
-            "ADD",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "ADD"
-        ],
-        [
-            "ADD",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "WRITE"
-        ],
-        [
             "WRITE",
             "INIT"
         ],
         [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "ASSIGN"
-        ],
-        [
             "ASSIGN",
             "ADD"
         ],
         [
-            "ADD",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "INIT"
-        ],
-        [
             "INIT",
             "ADD"
-        ],
-        [
-            "ADD",
-            "LT"
-        ],
-        [
-            "LT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "ADD"
-        ],
-        [
-            "ADD",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "DIV"
-        ],
-        [
-            "DIV",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "WRITE"
         ],
         [
             "WRITE",
             "READ"
-        ],
-        [
-            "READ",
-            "READ"
-        ],
-        [
-            "READ",
-            "READ"
-        ],
-        [
-            "READ",
-            "AVG_N"
         ],
         [
             "AVG_N",
             "CONST"
         ],
         [
-            "CONST",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "ADD"
-        ],
-        [
-            "ADD",
-            "ADD"
-        ],
-        [
-            "ADD",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "SUB"
-        ],
-        [
-            "SUB",
-            "SUB"
-        ],
-        [
-            "SUB",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "MUL"
-        ],
-        [
-            "MUL",
-            "MUL"
-        ],
-        [
-            "MUL",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "DIV"
-        ],
-        [
-            "DIV",
-            "DIV"
-        ],
-        [
-            "DIV",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "GT"
-        ],
-        [
-            "GT",
-            "LT"
-        ],
-        [
             "LT",
             "GT"
         ],
         [
-            "GT",
-            "LT"
-        ],
-        [
-            "LT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "GT"
-        ],
-        [
-            "GT",
-            "GT"
-        ],
-        [
-            "GT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "EQ"
-        ],
-        [
-            "EQ",
-            "EQ"
-        ],
-        [
-            "EQ",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "WRITE"
-        ],
-        [
-            "WRITE",
-            "WRITE"
-        ],
-        [
-            "WRITE",
-            "WRITE"
-        ],
-        [
-            "WRITE",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "LT"
-        ],
-        [
-            "LT",
-            "DIV"
-        ],
-        [
-            "DIV",
-            "INIT"
-        ],
-        [
             "INIT",
             "EQ"
         ],
         [
             "EQ",
-            "INIT"
-        ],
-        [
-            "INIT",
             "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "EQ"
-        ],
-        [
-            "EQ",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "EQ"
-        ],
-        [
-            "EQ",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "EQ"
-        ],
-        [
-            "EQ",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "EQ"
         ],
         [
             "EQ",
             "READ"
-        ],
-        [
-            "READ",
-            "READ"
-        ],
-        [
-            "READ",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "READ"
-        ],
-        [
-            "READ",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "MUL"
-        ],
-        [
-            "MUL",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "MUL"
         ],
         [
             "MUL",
             "EQ"
-        ],
-        [
-            "EQ",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "READ"
-        ],
-        [
-            "READ",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "READ"
         ],
         [
             "READ",
@@ -3747,176 +2535,16 @@
             "WRITE"
         ],
         [
-            "WRITE",
-            "ADD"
-        ],
-        [
-            "ADD",
-            "SUB"
-        ],
-        [
-            "SUB",
-            "MUL"
-        ],
-        [
-            "MUL",
-            "DIV"
-        ],
-        [
-            "DIV",
-            "GT"
-        ],
-        [
-            "GT",
-            "LT"
-        ],
-        [
-            "LT",
-            "EQ"
-        ],
-        [
-            "EQ",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "MUL"
-        ],
-        [
-            "MUL",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "LT"
-        ],
-        [
-            "LT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "MUL"
-        ],
-        [
             "MUL",
             "ADD"
         ],
         [
             "ADD",
             "READ"
-        ],
-        [
-            "READ",
-            "READ"
-        ],
-        [
-            "READ",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "READ"
-        ],
-        [
-            "READ",
-            "READ"
-        ],
-        [
-            "READ",
-            "ADD"
-        ],
-        [
-            "ADD",
-            "ADD"
-        ],
-        [
-            "ADD",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "GT"
-        ],
-        [
-            "GT",
-            "GT"
         ],
         [
             "GT",
             "WRITE"
-        ],
-        [
-            "WRITE",
-            "WRITE"
-        ],
-        [
-            "WRITE",
-            "READ"
-        ],
-        [
-            "READ",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "GT"
         ],
         [
             "GT",
@@ -3927,68 +2555,8 @@
             "WRITE"
         ],
         [
-            "WRITE",
-            "READ"
-        ],
-        [
-            "READ",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "LT"
-        ],
-        [
-            "LT",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "ADD"
-        ],
-        [
             "ADD",
             "INIT"
-        ],
-        [
-            "INIT",
-            "ADD"
         ],
         [
             "ADD",
@@ -3997,82 +2565,6 @@
         [
             "ASSIGN",
             "SUB"
-        ],
-        [
-            "SUB",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "READ"
-        ],
-        [
-            "READ",
-            "READ"
-        ],
-        [
-            "READ",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "ADD"
-        ],
-        [
-            "ADD",
-            "ADD"
-        ],
-        [
-            "ADD",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "ADD"
-        ],
-        [
-            "ADD",
-            "ASSIGN"
-        ],
-        [
-            "ASSIGN",
-            "CONST"
         ],
         [
             "CONST",
@@ -4081,82 +2573,6 @@
         [
             "AVG_N",
             "GT"
-        ],
-        [
-            "GT",
-            "WRITE"
-        ],
-        [
-            "WRITE",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "GT"
-        ],
-        [
-            "GT",
-            "WRITE"
-        ],
-        [
-            "WRITE",
-            "READ"
-        ],
-        [
-            "READ",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "CONST"
-        ],
-        [
-            "CONST",
-            "WRITE"
-        ],
-        [
-            "WRITE",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
         ],
         [
             "LT",
@@ -4175,42 +2591,6 @@
             "INIT"
         ],
         [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "MUL"
-        ],
-        [
-            "MUL",
-            "LT"
-        ],
-        [
             "LT",
             "COROUTINE_YIELD"
         ],
@@ -4227,36 +2607,8 @@
             "ASSIGN"
         ],
         [
-            "ASSIGN",
-            "ADD"
-        ],
-        [
             "ADD",
             "GT"
-        ],
-        [
-            "GT",
-            "WRITE"
-        ],
-        [
-            "WRITE",
-            "LT"
-        ],
-        [
-            "LT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "LT"
-        ],
-        [
-            "LT",
-            "COROUTINE_YIELD"
         ],
         [
             "COROUTINE_YIELD",
@@ -4271,84 +2623,148 @@
             "INIT"
         ],
         [
+            "READ",
+            "COROUTINE_YIELD"
+        ],
+        [
             "INIT",
+            "COROUTINE_YIELD"
+        ],
+        [
+            "COROUTINE_YIELD",
+            "INIT"
+        ],
+        [
+            "INIT",
+            "GT"
+        ],
+        [
+            "GT",
+            "READ"
+        ],
+        [
+            "ADD",
+            "EQ"
+        ],
+        [
+            "READ",
+            "MUL"
+        ],
+        [
+            "INIT",
+            "WRITE"
+        ],
+        [
+            "WRITE",
+            "SUB"
+        ],
+        [
+            "SUB",
+            "DIV"
+        ],
+        [
+            "GT",
+            "EQ"
+        ],
+        [
+            "READ",
+            "SUB"
+        ],
+        [
+            "MUL",
+            "GT"
+        ],
+        [
+            "EQ",
+            "WRITE"
+        ],
+        [
+            "AVG_N",
+            "ASSIGN"
+        ],
+        [
+            "LT",
+            "AVG_N"
+        ],
+        [
+            "AVG_N",
+            "LT"
+        ],
+        [
+            "DIV",
+            "WRITE"
+        ],
+        [
+            "ASSIGN",
+            "EQ"
+        ],
+        [
+            "DIV",
+            "EQ"
+        ],
+        [
+            "READ",
+            "GT"
+        ],
+        [
+            "SUB",
+            "INIT"
+        ],
+        [
+            "ASSIGN",
+            "AVG_N"
+        ],
+        [
+            "AVG_N",
+            "WRITE"
+        ],
+        [
+            "LT",
+            "COROUTINE_DELAY"
+        ],
+        [
+            "SUB",
+            "GT"
+        ],
+        [
+            "MUL",
+            "COROUTINE_YIELD"
+        ],
+        [
+            "COROUTINE_YIELD",
+            "DIV"
+        ],
+        [
+            "COROUTINE_DELAY",
+            "ASSIGN"
+        ],
+        [
+            "DIV",
+            "ADD"
+        ],
+        [
+            "ASSIGN",
+            "GT"
+        ],
+        [
+            "COROUTINE_DELAY",
             "EQ"
         ],
         [
             "EQ",
-            "CONST"
-        ],
-        [
-            "CONST",
             "GT"
         ],
         [
-            "GT",
-            "WRITE"
-        ],
-        [
             "WRITE",
-            "READ"
-        ],
-        [
-            "READ",
             "COROUTINE_YIELD"
         ],
         [
-            "COROUTINE_YIELD",
+            "READ",
             "COROUTINE_DELAY"
         ],
         [
             "COROUTINE_DELAY",
-            "INIT"
-        ],
-        [
-            "INIT",
             "COROUTINE_YIELD"
-        ],
-        [
-            "COROUTINE_YIELD",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "LT"
-        ],
-        [
-            "LT",
-            "ADD"
-        ],
-        [
-            "ADD",
-            "INIT"
-        ],
-        [
-            "INIT",
-            "GT"
-        ],
-        [
-            "GT",
-            "READ"
-        ],
-        [
-            "READ",
-            "READ"
-        ],
-        [
-            "READ",
-            "INIT"
         ]
     ]
 }

@@ -1,3 +1,5 @@
+import java.io.File;
+
 public class TestVerifier {
 
     public static void main(
@@ -16,35 +18,136 @@ public class TestVerifier {
                 "========================================"
         );
 
-        String mode = "coroutine";
+        /*
+         * Default configuration
+         */
+        String workflowMode =
+                "sequential";
 
-        if (args.length > 0) {
+        boolean relaxedMode =
+                false;
 
-            mode = args[0];
+        /*
+         * Parse arguments
+         */
+        if (args.length >= 1) {
+
+            workflowMode =
+                    args[0];
+        }
+
+        if (args.length >= 2) {
+
+            String validationMode =
+                    args[1];
+
+            if (
+                    validationMode.equalsIgnoreCase(
+                            "relaxed"
+                    )
+            ) {
+
+                relaxedMode = true;
+            }
         }
 
         /*
-         * Files
+         * Base path
+         */
+        String basePath =
+                System.getProperty(
+                        "user.dir"
+                );
+
+        /*
+         * Extractor path
+         */
+        String extractorPath =
+                basePath
+                        + "/../extractor/";
+
+        /*
+         * File selection
          */
         String workflowFile;
-
         String traceFile;
 
-        if (mode.equals("sequential")) {
+        if (
+                workflowMode.equals(
+                        "coroutine"
+                )
+        ) {
 
             workflowFile =
-                    "../extractor/workflow_graph_sequential.json";
+                    extractorPath
+                            + "workflow_graph_coroutine.json";
 
             traceFile =
-                    "../extractor/trace.json";
-
+                    extractorPath
+                            + "trace.json";
         } else {
 
             workflowFile =
-                    "../extractor/workflow_graph_coroutine.json";
+                    extractorPath
+                            + "workflow_graph_sequential.json";
 
             traceFile =
-                    "../extractor/trace.json";
+                    extractorPath
+                            + "trace.json";
+        }
+
+        /*
+         * Debug paths
+         */
+        System.out.println();
+
+        System.out.println(
+                "[DEBUG] workflow file:"
+        );
+
+        System.out.println(
+                workflowFile
+        );
+
+        System.out.println();
+
+        System.out.println(
+                "[DEBUG] trace file:"
+        );
+
+        System.out.println(
+                traceFile
+        );
+
+        /*
+         * File existence check
+         */
+        File wf =
+                new File(workflowFile);
+
+        File tf =
+                new File(traceFile);
+
+        if (!wf.exists()) {
+
+            System.out.println();
+
+            System.out.println(
+                    "[ERROR] Workflow file not found"
+            );
+
+            return;
+        }
+
+        if (!tf.exists()) {
+
+            System.out.println();
+
+            System.out.println(
+                    "[ERROR] Trace file not found"
+            );
+
+            return;
         }
 
         /*
@@ -67,21 +170,28 @@ public class TestVerifier {
                 );
 
         /*
-         * Verifier
+         * Create verifier
          */
         Verifier verifier =
                 new Verifier(
-                        graph
+                        graph,
+                        relaxedMode
                 );
 
+        /*
+         * Validate
+         */
         VerificationResult result =
                 verifier.validateTrace(
                         trace,
+                        workflowMode,
                         workflowFile,
-                        traceFile,
-                        mode
+                        traceFile
                 );
 
+        /*
+         * Final result
+         */
         System.out.println();
 
         System.out.println(
