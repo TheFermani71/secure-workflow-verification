@@ -19,56 +19,28 @@ public class TraceEntry {
     /*
      * deltaUs:
      *
-     * Tempo totale trascorso rispetto
-     * all'entry precedente.
-     *
-     * Include:
-     * - tempo API
-     * - tempo applicativo
-     * - eventuali gap/interruzioni
+     * Total elapsed time since previous entry.
      */
     public long deltaUs;
 
     /*
-     * deltaApiUs:
-     *
-     * Tempo interno della singola API.
-     *
-     * Include:
-     * - AES-GCM
-     * - seal/unseal
-     * - HMAC
-     * - logica kernel
-     *
-     * Valore trusted:
-     * misurato internamente dal firmware.
+     * Internal API timing.
      */
     public long deltaApiUs;
 
     /*
-     * deltaGapUs:
-     *
-     * Tempo intermedio tra:
-     * - fine API precedente
-     * - inizio API corrente
-     *
-     * NON arriva dal firmware.
-     *
-     * Viene derivato dal verifier:
-     *
-     * deltaGapUs =
-     *     deltaUs - deltaApiUs
-     *
-     * Questo rappresenta:
-     * - if
-     * - for
-     * - coroutine scheduling
-     * - codice utente
-     * - ritardi artificiali
+     * External gap timing.
      */
     public long deltaGapUs;
 
     public String chainTag;
+
+    /*
+     * Hash chain fields
+     */
+    public String prevHash;
+
+    public String entryHash;
 
     @Override
     public String toString() {
@@ -79,12 +51,6 @@ public class TraceEntry {
                 + opName
                 + " | delta="
                 + deltaUs
-                + " us"
-                + " | api="
-                + deltaApiUs
-                + " us"
-                + " | gap="
-                + deltaGapUs
                 + " us";
     }
 }

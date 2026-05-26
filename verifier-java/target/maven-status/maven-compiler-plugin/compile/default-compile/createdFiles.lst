@@ -1,5 +1,6 @@
 ComplexityMetadata.class
 TraceParser.class
+HashChainUtils.class
 WorkflowNavigator.class
 GraphEdge.class
 GapTimingValidator.class
@@ -13,5 +14,6 @@ TraceEntry.class
 TestVerifier.class
 GraphNode.class
 ExecutionTrace.class
+TraceIntegrityValidator.class
 WorkflowGraph.class
 WorkflowPathValidator.class

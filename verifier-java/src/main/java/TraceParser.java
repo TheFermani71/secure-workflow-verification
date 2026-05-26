@@ -28,7 +28,7 @@ public class TraceParser {
                     );
 
             /*
-             * Global metadata
+             * Metadata
              */
             long apiVersion =
                     (Long) root.get(
@@ -46,7 +46,7 @@ public class TraceParser {
                     );
 
             /*
-             * Trace entries
+             * Entries
              */
             JSONArray jsonEntries =
                     (JSONArray) root.get(
@@ -116,12 +116,31 @@ public class TraceParser {
                                 "chain_tag"
                         );
 
+                /*
+                 * HASH CHAIN
+                 */
+
+                entry.prevHash =
+                        (String) e.get(
+                                "prev_hash"
+                        );
+
+                entry.entryHash =
+                        (String) e.get(
+                                "entry_hash"
+                        );
+                System.out.println(
+                        "[DEBUG HASH] seq="
+                        + entry.seq
+                        + " prev="
+                        + entry.prevHash
+                        + " hash="
+                        + entry.entryHash
+                        );
+
                 entries.add(entry);
             }
 
-            /*
-             * Debug output
-             */
             System.out.println();
 
             System.out.println(

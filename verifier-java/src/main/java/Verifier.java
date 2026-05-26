@@ -1,32 +1,19 @@
 public class Verifier {
 
-    /*
-     * Workflow graph
-     */
     private WorkflowGraph graph;
 
-    /*
-     * Validators
-     */
     private WorkflowPathValidator pathValidator;
 
     private ApiTimingValidator apiTimingValidator;
 
     private GapTimingValidator gapTimingValidator;
 
-    /*
-     * Blockchain connector
-     */
+    private TraceIntegrityValidator integrityValidator;
+
     private BlockchainConnector blockchainConnector;
 
-    /*
-     * Validation mode
-     */
     private boolean relaxedMode;
 
-    /*
-     * Constructor
-     */
     public Verifier(
             WorkflowGraph graph,
             boolean relaxedMode
@@ -38,9 +25,6 @@ public class Verifier {
         this.relaxedMode =
                 relaxedMode;
 
-        /*
-         * Validators
-         */
         this.pathValidator =
                 new WorkflowPathValidator(
                         relaxedMode
@@ -52,29 +36,20 @@ public class Verifier {
         this.gapTimingValidator =
                 new GapTimingValidator();
 
-        /*
-         * Blockchain connector
-         */
+        this.integrityValidator =
+                new TraceIntegrityValidator();
+
         this.blockchainConnector =
                 new BlockchainConnector(
 
                         "http://127.0.0.1:8545",
 
-                        /*
-                         * Hardhat test private key
-                         */
                         "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
 
-                        /*
-                         * Contract address
-                         */
                         "0x5FbDB2315678afecb367f032d93F642f64180aa3"
                 );
     }
 
-    /*
-     * Main validation pipeline
-     */
     public VerificationResult validateTrace(
             ExecutionTrace trace,
             String workflowMode,
@@ -83,15 +58,16 @@ public class Verifier {
     ) {
 
         boolean workflowValid;
+
         boolean apiTimingValid;
+
+        boolean integrityValid;
+
         boolean finalValid;
 
         /*
-         * ========================================
-         * WORKFLOW VALIDATION
-         * ========================================
+         * Workflow validation
          */
-
         workflowValid =
                 pathValidator.validate(
                         trace,
@@ -99,43 +75,41 @@ public class Verifier {
                 );
 
         /*
-         * ========================================
-         * API TIMING VALIDATION
-         * ========================================
+         * Timing validation
          */
-
         apiTimingValid =
                 apiTimingValidator.validate(
                         trace
                 );
 
         /*
-         * ========================================
-         * GAP TIMING ANALYSIS
-         * ========================================
+         * Gap analysis
          */
-
         gapTimingValidator.analyze(
                 trace
         );
 
         /*
-         * ========================================
-         * FINAL RESULT
-         * ========================================
+         * Integrity validation
          */
+        integrityValid =
+                integrityValidator.validate(
+                        trace
+                );
 
+        /*
+         * Final result
+         */
         finalValid =
                 workflowValid
                         &&
-                        apiTimingValid;
+                        apiTimingValid
+                        &&
+                        integrityValid;
 
         /*
-         * ========================================
-         * HASH GENERATION
-         * ========================================
+         * Hash generation
          */
-
         String workflowHash =
                 HashUtils.sha256File(
                         workflowFile
@@ -147,11 +121,8 @@ public class Verifier {
                 );
 
         /*
-         * ========================================
-         * BLOCKCHAIN ATTESTATION
-         * ========================================
+         * Blockchain attestation
          */
-
         System.out.println();
 
         System.out.println(
@@ -173,11 +144,8 @@ public class Verifier {
         );
 
         /*
-         * ========================================
-         * RESULT OBJECT
-         * ========================================
+         * Result object
          */
-
         VerificationResult result =
                 new VerificationResult(
 
@@ -195,11 +163,8 @@ public class Verifier {
                 );
 
         /*
-         * ========================================
-         * PRINT RESULT
-         * ========================================
+         * Print result
          */
-
         System.out.println();
 
         System.out.println(
