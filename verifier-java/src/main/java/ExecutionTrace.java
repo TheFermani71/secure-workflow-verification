@@ -8,21 +8,43 @@ public class ExecutionTrace {
 
     public long calTickUs;
 
+    /*
+     * Merkle Root
+     */
+    public String traceMerkleRoot;
+
     public List<TraceEntry> entries;
 
     public ExecutionTrace() {
     }
 
     public ExecutionTrace(
-            List<TraceEntry> entries,
-            long calTickUs
+
+            int apiVersion,
+
+            String deviceId,
+
+            long calTickUs,
+
+            String traceMerkleRoot,
+
+            List<TraceEntry> entries
     ) {
 
-        this.entries =
-                entries;
+        this.apiVersion =
+                apiVersion;
+
+        this.deviceId =
+                deviceId;
 
         this.calTickUs =
                 calTickUs;
+
+        this.traceMerkleRoot =
+                traceMerkleRoot;
+
+        this.entries =
+                entries;
     }
 
     /*
@@ -42,6 +64,14 @@ public class ExecutionTrace {
     }
 
     /*
+     * Get Merkle Root
+     */
+    public String getTraceMerkleRoot() {
+
+        return traceMerkleRoot;
+    }
+
+    /*
      * Debug
      */
     @Override
@@ -49,6 +79,8 @@ public class ExecutionTrace {
 
         return "[ExecutionTrace entries="
                 + entries.size()
+                + ", merkleRoot="
+                + traceMerkleRoot
                 + "]";
     }
 }

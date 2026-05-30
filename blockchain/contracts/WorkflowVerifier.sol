@@ -10,9 +10,15 @@ contract WorkflowVerifier {
 
         string workflowMode;
 
+        string verifierMode;
+
         string workflowHash;
 
         string traceHash;
+
+        string traceMerkleRoot;
+
+        uint256 traceLength;
 
         bool valid;
 
@@ -25,6 +31,16 @@ contract WorkflowVerifier {
     VerificationRecord[] public records;
 
     /*
+     * Replay protection
+     */
+    mapping(string => bool) public registeredTraceHashes;
+
+    /*
+     * Consistency protection
+     */
+    mapping(string => string) public traceHashToMerkleRoot;
+
+    /*
      * Event
      */
     event VerificationStored(
@@ -33,9 +49,15 @@ contract WorkflowVerifier {
 
         string workflowMode,
 
+        string verifierMode,
+
         string workflowHash,
 
         string traceHash,
+
+        string traceMerkleRoot,
+
+        uint256 traceLength,
 
         bool valid,
 
@@ -51,15 +73,75 @@ contract WorkflowVerifier {
 
         string memory workflowMode,
 
+        string memory verifierMode,
+
         string memory workflowHash,
 
         string memory traceHash,
+
+        string memory traceMerkleRoot,
+
+        uint256 traceLength,
 
         bool valid
     )
 
         public
     {
+
+        require(
+
+            bytes(deviceId).length > 0,
+
+            "Invalid deviceId"
+        );
+
+        require(
+
+            bytes(workflowMode).length > 0,
+
+            "Invalid workflowMode"
+        );
+
+        require(
+
+            bytes(verifierMode).length > 0,
+
+            "Invalid verifierMode"
+        );
+
+        require(
+
+            bytes(traceMerkleRoot).length > 0,
+
+            "Invalid Merkle Root"
+        );
+
+        require(
+
+            traceLength > 0,
+
+            "Invalid trace length"
+        );
+
+        /*
+         * Replay protection
+         */
+        require(
+
+            !registeredTraceHashes[traceHash],
+
+            "Trace already registered"
+        );
+
+        /*
+         * Consistency protection
+         */
+        traceHashToMerkleRoot[traceHash] =
+
+            traceMerkleRoot;
+
+        registeredTraceHashes[traceHash] = true;
 
         VerificationRecord memory record =
 
@@ -69,9 +151,15 @@ contract WorkflowVerifier {
 
                 workflowMode,
 
+                verifierMode,
+
                 workflowHash,
 
                 traceHash,
+
+                traceMerkleRoot,
+
+                traceLength,
 
                 valid,
 
@@ -86,9 +174,15 @@ contract WorkflowVerifier {
 
             workflowMode,
 
+            verifierMode,
+
             workflowHash,
 
             traceHash,
+
+            traceMerkleRoot,
+
+            traceLength,
 
             valid,
 
@@ -133,6 +227,12 @@ contract WorkflowVerifier {
 
             string memory,
 
+            string memory,
+
+            string memory,
+
+            uint256,
+
             bool,
 
             uint256
@@ -149,13 +249,59 @@ contract WorkflowVerifier {
 
             r.workflowMode,
 
+            r.verifierMode,
+
             r.workflowHash,
 
             r.traceHash,
+
+            r.traceMerkleRoot,
+
+            r.traceLength,
 
             r.valid,
 
             r.timestamp
         );
+    }
+
+    /*
+     * Check if trace hash exists
+     */
+    function isTraceRegistered(
+
+        string memory traceHash
+    )
+
+        public
+
+        view
+
+        returns (bool)
+    {
+
+        return
+
+            registeredTraceHashes[traceHash];
+    }
+
+    /*
+     * Get Merkle Root associated
+     */
+    function getMerkleRoot(
+
+        string memory traceHash
+    )
+
+        public
+
+        view
+
+        returns (string memory)
+    {
+
+        return
+
+            traceHashToMerkleRoot[traceHash];
     }
 }

@@ -65,41 +65,26 @@ public class Verifier {
 
         boolean finalValid;
 
-        /*
-         * Workflow validation
-         */
         workflowValid =
                 pathValidator.validate(
                         trace,
                         graph
                 );
 
-        /*
-         * Timing validation
-         */
         apiTimingValid =
                 apiTimingValidator.validate(
                         trace
                 );
 
-        /*
-         * Gap analysis
-         */
         gapTimingValidator.analyze(
                 trace
         );
 
-        /*
-         * Integrity validation
-         */
         integrityValid =
                 integrityValidator.validate(
                         trace
                 );
 
-        /*
-         * Final result
-         */
         finalValid =
                 workflowValid
                         &&
@@ -107,9 +92,6 @@ public class Verifier {
                         &&
                         integrityValid;
 
-        /*
-         * Hash generation
-         */
         String workflowHash =
                 HashUtils.sha256File(
                         workflowFile
@@ -121,37 +103,41 @@ public class Verifier {
                 );
 
         /*
-         * Blockchain attestation
+         * Verifier mode
          */
-        System.out.println();
+        String verifierMode;
 
-        System.out.println(
-                "========================================"
-        );
+        if (relaxedMode) {
 
-        System.out.println(
-                " BLOCKCHAIN ATTESTATION"
-        );
+            verifierMode =
+                    "RELAXED";
 
-        System.out.println(
-                "========================================"
-        );
+        } else {
 
-        blockchainConnector.registerVerification(
-                workflowHash,
-                traceHash,
-                finalValid
-        );
+            verifierMode =
+                    "STRICT";
+        }
 
         /*
-         * Result object
+         * Trace metadata
+         */
+        long traceLength =
+                trace.entries.size();
+
+        String traceMerkleRoot =
+                trace.traceMerkleRoot;
+
+        /*
+         * Build result object
          */
         VerificationResult result =
                 new VerificationResult(
 
-                        null,
+                        trace.deviceId,
 
                         workflowMode,
+
+                        verifierMode,
 
                         finalValid,
 
@@ -159,8 +145,19 @@ public class Verifier {
 
                         workflowHash,
 
+                        traceMerkleRoot,
+
+                        traceLength,
+
                         System.currentTimeMillis()
                 );
+
+        /*
+         * Blockchain attestation
+         */
+        blockchainConnector.registerVerification(
+                result
+        );
 
         /*
          * Print result

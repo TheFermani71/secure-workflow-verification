@@ -4,6 +4,7 @@ import argparse
 
 from workflow_extractor import WorkflowExtractor
 from graph_builder import GraphBuilder
+from merkle_tree import MerkleTree
 
 
 # ==========================================
@@ -33,6 +34,7 @@ def build_trace():
         ("CONST", 122),
         ("GT", 359),
         ("WRITE", 134)
+
     ]
 
     for i, (op_name, api_time) in enumerate(operations):
@@ -107,6 +109,7 @@ def build_trace():
         # ----------------------------------
 
         entry_hash = sha256(
+
             prev_hash + payload
         )
 
@@ -115,6 +118,19 @@ def build_trace():
         entry["entry_hash"] = entry_hash
 
         trace_entries.append(entry)
+
+    # --------------------------------------
+    # MERKLE ROOT
+    # --------------------------------------
+
+    merkle_tree = MerkleTree()
+
+    trace_merkle_root = (
+
+        merkle_tree.build_root(
+            trace_entries
+        )
+    )
 
     # --------------------------------------
     # FINAL TRACE
@@ -127,6 +143,8 @@ def build_trace():
         "device_id": "ATOM_GPS_V2",
 
         "cal_tick_us": 472,
+
+        "trace_merkle_root": trace_merkle_root,
 
         "entries": trace_entries
     }
@@ -153,6 +171,11 @@ def save_trace(trace):
     print("[Extractor] Trace generated")
 
     print("Entries :", len(trace["entries"]))
+
+    print(
+        "Merkle Root :",
+        trace["trace_merkle_root"]
+    )
 
     print("Output  : trace.json")
 
@@ -261,6 +284,7 @@ def main():
         build_workflow("coroutine")
 
     print()
+
     print("[DONE] Extraction pipeline completed")
 
 

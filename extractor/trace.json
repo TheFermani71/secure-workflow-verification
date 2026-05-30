@@ -2,6 +2,7 @@
     "sv_api_version": 6,
     "device_id": "ATOM_GPS_V2",
     "cal_tick_us": 472,
+    "trace_merkle_root": "b918ed9bd845d6280cdc3e939897cd36dc31e79bb236710fd869e3b336c46e91",
     "entries": [
         {
             "seq": 0,

@@ -3,12 +3,15 @@
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/GraphNode.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/ApiTimingValidator.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/TestVerifier.java
+/home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/AuditExplorer.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/WorkflowLoader.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/BlockchainConnector.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/ComplexityMetadata.java
+/home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/VerificationRecord.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/WorkflowPathValidator.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/TraceEntry.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/ExecutionTrace.java
+/home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/WorkflowVerifierReader.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/HashUtils.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/GraphEdge.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/WorkflowGraph.java

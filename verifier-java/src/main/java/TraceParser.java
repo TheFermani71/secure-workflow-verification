@@ -17,6 +17,12 @@ public class TraceParser {
 
         long calTickUs = 0;
 
+        int apiVersion = 0;
+
+        String deviceId = null;
+
+        String traceMerkleRoot = null;
+
         try {
 
             JSONParser parser =
@@ -30,12 +36,12 @@ public class TraceParser {
             /*
              * Metadata
              */
-            long apiVersion =
-                    (Long) root.get(
+            apiVersion =
+                    ((Long) root.get(
                             "sv_api_version"
-                    );
+                    )).intValue();
 
-            String deviceId =
+            deviceId =
                     (String) root.get(
                             "device_id"
                     );
@@ -43,6 +49,11 @@ public class TraceParser {
             calTickUs =
                     (Long) root.get(
                             "cal_tick_us"
+                    );
+
+            traceMerkleRoot =
+                    (String) root.get(
+                            "trace_merkle_root"
                     );
 
             /*
@@ -119,7 +130,6 @@ public class TraceParser {
                 /*
                  * HASH CHAIN
                  */
-
                 entry.prevHash =
                         (String) e.get(
                                 "prev_hash"
@@ -128,14 +138,6 @@ public class TraceParser {
                 entry.entryHash =
                         (String) e.get(
                                 "entry_hash"
-                        );
-                System.out.println(
-                        "[DEBUG HASH] seq="
-                        + entry.seq
-                        + " prev="
-                        + entry.prevHash
-                        + " hash="
-                        + entry.entryHash
                         );
 
                 entries.add(entry);
@@ -167,14 +169,27 @@ public class TraceParser {
                             + calTickUs
             );
 
+            System.out.println(
+                    " Merkle Root : "
+                            + traceMerkleRoot
+            );
+
         } catch (Exception ex) {
 
             ex.printStackTrace();
         }
 
         return new ExecutionTrace(
-                entries,
-                calTickUs
+
+                apiVersion,
+
+                deviceId,
+
+                calTickUs,
+
+                traceMerkleRoot,
+
+                entries
         );
     }
 }

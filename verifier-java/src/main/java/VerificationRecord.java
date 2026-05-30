@@ -1,7 +1,7 @@
-public class VerificationResult {
+public class VerificationRecord {
 
     /*
-     * Device info
+     * Device
      */
     public String deviceId;
 
@@ -16,19 +16,14 @@ public class VerificationResult {
     public String verifierMode;
 
     /*
-     * Verification status
+     * Workflow hash
      */
-    public boolean valid;
+    public String workflowHash;
 
     /*
      * Trace hash
      */
     public String traceHash;
-
-    /*
-     * Workflow hash
-     */
-    public String workflowHash;
 
     /*
      * Merkle root
@@ -41,11 +36,16 @@ public class VerificationResult {
     public long traceLength;
 
     /*
-     * Timestamp
+     * Verification result
+     */
+    public boolean valid;
+
+    /*
+     * Blockchain timestamp
      */
     public long timestamp;
 
-    public VerificationResult(
+    public VerificationRecord(
 
             String deviceId,
 
@@ -53,15 +53,15 @@ public class VerificationResult {
 
             String verifierMode,
 
-            boolean valid,
+            String workflowHash,
 
             String traceHash,
-
-            String workflowHash,
 
             String traceMerkleRoot,
 
             long traceLength,
+
+            boolean valid,
 
             long timestamp
     ) {
@@ -75,20 +75,20 @@ public class VerificationResult {
         this.verifierMode =
                 verifierMode;
 
-        this.valid =
-                valid;
+        this.workflowHash =
+                workflowHash;
 
         this.traceHash =
                 traceHash;
-
-        this.workflowHash =
-                workflowHash;
 
         this.traceMerkleRoot =
                 traceMerkleRoot;
 
         this.traceLength =
                 traceLength;
+
+        this.valid =
+                valid;
 
         this.timestamp =
                 timestamp;
@@ -97,34 +97,43 @@ public class VerificationResult {
     @Override
     public String toString() {
 
-        return "\nVerificationResult {\n"
+        return "\nVerificationRecord {\n"
 
                 + " deviceId        = "
-                + deviceId + "\n"
+                + deviceId
+                + "\n"
 
-                + " workflowMode    = "
-                + workflowMode + "\n"
+                + " workflowMode   = "
+                + workflowMode
+                + "\n"
 
-                + " verifierMode    = "
-                + verifierMode + "\n"
+                + " verifierMode   = "
+                + verifierMode
+                + "\n"
 
-                + " valid           = "
-                + valid + "\n"
+                + " workflowHash   = "
+                + workflowHash
+                + "\n"
 
-                + " traceHash       = "
-                + traceHash + "\n"
+                + " traceHash      = "
+                + traceHash
+                + "\n"
 
-                + " workflowHash    = "
-                + workflowHash + "\n"
+                + " merkleRoot     = "
+                + traceMerkleRoot
+                + "\n"
 
-                + " merkleRoot      = "
-                + traceMerkleRoot + "\n"
+                + " traceLength    = "
+                + traceLength
+                + "\n"
 
-                + " traceLength     = "
-                + traceLength + "\n"
+                + " valid          = "
+                + valid
+                + "\n"
 
-                + " timestamp       = "
-                + timestamp + "\n"
+                + " timestamp      = "
+                + timestamp
+                + "\n"
 
                 + "}";
     }
