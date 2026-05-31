@@ -84,12 +84,11 @@ public class WorkflowPathValidator {
             }
 
             /*
-             * RELAXED / COROUTINE
+             * RELAXED ASYNC
              */
             if (
-                    mode == ValidationMode.RELAXED_ASYNC
-                    ||
-                    mode == ValidationMode.COROUTINE_AWARE
+                    mode ==
+                            ValidationMode.RELAXED_ASYNC
             ) {
 
                 boolean reachable =
@@ -110,6 +109,43 @@ public class WorkflowPathValidator {
                     );
 
                     continue;
+                }
+            }
+
+            /*
+             * COROUTINE AWARE
+             */
+            if (
+                    mode ==
+                            ValidationMode.COROUTINE_AWARE
+            ) {
+
+                boolean coroutineTransition =
+                        isCoroutineNode(from)
+                                ||
+                                isCoroutineNode(to);
+
+                if (coroutineTransition) {
+
+                    boolean reachable =
+                            isReachable(
+                                    graph,
+                                    from,
+                                    to,
+                                    MAX_RELAXED_DEPTH
+                            );
+
+                    if (reachable) {
+
+                        System.out.println(
+                                "[COROUTINE OK] "
+                                        + from
+                                        + " -> "
+                                        + to
+                        );
+
+                        continue;
+                    }
                 }
             }
 
@@ -168,6 +204,27 @@ public class WorkflowPathValidator {
     }
 
     /*
+     * Coroutine nodes
+     */
+    private boolean isCoroutineNode(
+            String op
+    ) {
+
+        return
+                op.equals(
+                        "COROUTINE_LOOP"
+                )
+                        ||
+                op.equals(
+                        "COROUTINE_YIELD"
+                )
+                        ||
+                op.equals(
+                        "COROUTINE_DELAY"
+                );
+    }
+
+    /*
      * Graph reachability
      */
     private boolean isReachable(
@@ -210,17 +267,31 @@ public class WorkflowPathValidator {
             return true;
         }
 
-        visited.add(current);
+        visited.add(
+                current
+        );
 
-        if (!graph.adjacency.containsKey(current)) {
+        if (
+                !graph.adjacency.containsKey(
+                        current
+                )
+        ) {
 
             return false;
         }
 
-        for (String next :
-                graph.adjacency.get(current)) {
+        for (
+                String next :
+                graph.adjacency.get(
+                        current
+                )
+        ) {
 
-            if (visited.contains(next)) {
+            if (
+                    visited.contains(
+                            next
+                    )
+            ) {
 
                 continue;
             }
