@@ -10,6 +10,7 @@ VerificationRecord.class
 WorkflowVerifierReader$3.class
 BlockchainConnector.class
 TraceEntry.class
+ValidationMode.class
 ExecutionTrace.class
 WorkflowGraph.class
 WorkflowPathValidator.class
@@ -23,6 +24,7 @@ WorkflowVerifierReader$10.class
 Verifier.class
 VerificationResult.class
 HashUtils.class
+WorkflowPathValidator$1.class
 ApiTimingValidator.class
 WorkflowVerifierReader$1.class
 WorkflowVerifierReader$4.class

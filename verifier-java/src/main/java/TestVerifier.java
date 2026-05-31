@@ -24,8 +24,8 @@ public class TestVerifier {
         String workflowMode =
                 "sequential";
 
-        boolean relaxedMode =
-                false;
+        ValidationMode validationMode =
+                ValidationMode.STRICT;
 
         /*
          * Parse arguments
@@ -38,16 +38,37 @@ public class TestVerifier {
 
         if (args.length >= 2) {
 
-            String validationMode =
+            String modeArg =
                     args[1];
 
             if (
-                    validationMode.equalsIgnoreCase(
+                    modeArg.equalsIgnoreCase(
                             "relaxed"
                     )
             ) {
 
-                relaxedMode = true;
+                validationMode =
+                        ValidationMode.RELAXED_ASYNC;
+            }
+
+            else if (
+                    modeArg.equalsIgnoreCase(
+                            "coroutine"
+                    )
+            ) {
+
+                validationMode =
+                        ValidationMode.COROUTINE_AWARE;
+            }
+
+            else if (
+                    modeArg.equalsIgnoreCase(
+                            "strict"
+                    )
+            ) {
+
+                validationMode =
+                        ValidationMode.STRICT;
             }
         }
 
@@ -85,7 +106,9 @@ public class TestVerifier {
             traceFile =
                     extractorPath
                             + "trace.json";
-        } else {
+        }
+
+        else {
 
             workflowFile =
                     extractorPath
@@ -175,7 +198,7 @@ public class TestVerifier {
         Verifier verifier =
                 new Verifier(
                         graph,
-                        relaxedMode
+                        validationMode
                 );
 
         /*
@@ -212,7 +235,9 @@ public class TestVerifier {
                     "[TRACE] VALID"
             );
 
-        } else {
+        }
+
+        else {
 
             System.out.println(
                     "[TRACE] INVALID"

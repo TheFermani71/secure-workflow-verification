@@ -197,7 +197,10 @@ def build_workflow(mode):
 
     builder = GraphBuilder()
 
-    graph = builder.build(sequence)
+    graph = builder.build(
+        sequence,
+        mode
+    )
 
     if mode == "sequential":
 

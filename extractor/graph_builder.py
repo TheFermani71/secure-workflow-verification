@@ -8,9 +8,14 @@ class GraphBuilder:
     # BUILD GRAPH
     # ==========================================
 
-    def build(self, sequence):
+    def build(
+            self,
+            sequence,
+            mode="sequential"
+    ):
 
         nodes = []
+
         edges = []
 
         edge_set = set()
@@ -37,6 +42,7 @@ class GraphBuilder:
         for i in range(len(sequence) - 1):
 
             src = sequence[i]
+
             dst = sequence[i + 1]
 
             edge = (src, dst)
@@ -48,21 +54,24 @@ class GraphBuilder:
                 edges.append([src, dst])
 
         # --------------------------------------
-        # CREATE ASYNC / COROUTINE EDGES
+        # SEQUENTIAL SHORTCUT EDGES
         # --------------------------------------
 
-        for i in range(len(sequence) - 2):
+        if mode == "sequential":
 
-            src = sequence[i]
-            dst = sequence[i + 2]
+            for i in range(len(sequence) - 2):
 
-            edge = (src, dst)
+                src = sequence[i]
 
-            if edge not in edge_set:
+                dst = sequence[i + 2]
 
-                edge_set.add(edge)
+                edge = (src, dst)
 
-                edges.append([src, dst])
+                if edge not in edge_set:
+
+                    edge_set.add(edge)
+
+                    edges.append([src, dst])
 
         # --------------------------------------
         # FINAL GRAPH
@@ -71,6 +80,7 @@ class GraphBuilder:
         graph = {
 
             "nodes": nodes,
+
             "edges": edges
 
         }

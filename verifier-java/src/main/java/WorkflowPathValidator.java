@@ -6,7 +6,7 @@ public class WorkflowPathValidator {
     /*
      * Validation mode
      */
-    private boolean relaxedAsyncMode;
+    private ValidationMode mode;
 
     /*
      * Maximum async depth
@@ -17,11 +17,10 @@ public class WorkflowPathValidator {
      * Constructor
      */
     public WorkflowPathValidator(
-            boolean relaxedAsyncMode
+            ValidationMode mode
     ) {
 
-        this.relaxedAsyncMode =
-                relaxedAsyncMode;
+        this.mode = mode;
     }
 
     /*
@@ -85,9 +84,13 @@ public class WorkflowPathValidator {
             }
 
             /*
-             * RELAXED ASYNC MODE
+             * RELAXED / COROUTINE
              */
-            if (relaxedAsyncMode) {
+            if (
+                    mode == ValidationMode.RELAXED_ASYNC
+                    ||
+                    mode == ValidationMode.COROUTINE_AWARE
+            ) {
 
                 boolean reachable =
                         isReachable(
@@ -134,17 +137,31 @@ public class WorkflowPathValidator {
 
         System.out.println();
 
-        if (relaxedAsyncMode) {
+        switch (mode) {
 
-            System.out.println(
-                    "[WORKFLOW] VALID (RELAXED ASYNC MODE)"
-            );
+            case STRICT:
 
-        } else {
+                System.out.println(
+                        "[WORKFLOW] VALID (STRICT MODE)"
+                );
 
-            System.out.println(
-                    "[WORKFLOW] VALID (STRICT MODE)"
-            );
+                break;
+
+            case RELAXED_ASYNC:
+
+                System.out.println(
+                        "[WORKFLOW] VALID (RELAXED ASYNC MODE)"
+                );
+
+                break;
+
+            case COROUTINE_AWARE:
+
+                System.out.println(
+                        "[WORKFLOW] VALID (COROUTINE AWARE MODE)"
+                );
+
+                break;
         }
 
         return true;

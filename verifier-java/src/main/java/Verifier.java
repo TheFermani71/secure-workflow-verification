@@ -12,22 +12,22 @@ public class Verifier {
 
     private BlockchainConnector blockchainConnector;
 
-    private boolean relaxedMode;
+    private ValidationMode validationMode;
 
     public Verifier(
             WorkflowGraph graph,
-            boolean relaxedMode
+            ValidationMode validationMode
     ) {
 
         this.graph =
                 graph;
 
-        this.relaxedMode =
-                relaxedMode;
+        this.validationMode =
+                validationMode;
 
         this.pathValidator =
                 new WorkflowPathValidator(
-                        relaxedMode
+                        validationMode
                 );
 
         this.apiTimingValidator =
@@ -102,34 +102,15 @@ public class Verifier {
                         traceFile
                 );
 
-        /*
-         * Verifier mode
-         */
-        String verifierMode;
+        String verifierMode =
+                validationMode.name();
 
-        if (relaxedMode) {
-
-            verifierMode =
-                    "RELAXED";
-
-        } else {
-
-            verifierMode =
-                    "STRICT";
-        }
-
-        /*
-         * Trace metadata
-         */
         long traceLength =
                 trace.entries.size();
 
         String traceMerkleRoot =
                 trace.traceMerkleRoot;
 
-        /*
-         * Build result object
-         */
         VerificationResult result =
                 new VerificationResult(
 
@@ -152,16 +133,10 @@ public class Verifier {
                         System.currentTimeMillis()
                 );
 
-        /*
-         * Blockchain attestation
-         */
         blockchainConnector.registerVerification(
                 result
         );
 
-        /*
-         * Print result
-         */
         System.out.println();
 
         System.out.println(

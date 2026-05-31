@@ -93,42 +93,6 @@
         [
             "COROUTINE_DELAY",
             "COROUTINE_YIELD"
-        ],
-        [
-            "COROUTINE_LOOP",
-            "COROUTINE_YIELD"
-        ],
-        [
-            "READ",
-            "COROUTINE_LOOP"
-        ],
-        [
-            "COROUTINE_YIELD",
-            "COROUTINE_DELAY"
-        ],
-        [
-            "COROUTINE_LOOP",
-            "AVG_N"
-        ],
-        [
-            "COROUTINE_DELAY",
-            "CONST"
-        ],
-        [
-            "AVG_N",
-            "GT"
-        ],
-        [
-            "CONST",
-            "WRITE"
-        ],
-        [
-            "GT",
-            "COROUTINE_YIELD"
-        ],
-        [
-            "WRITE",
-            "COROUTINE_LOOP"
         ]
     ]
 }
