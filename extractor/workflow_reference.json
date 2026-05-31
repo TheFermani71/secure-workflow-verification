@@ -1,0 +1,12 @@
+{
+  "workflow_name": "SV-API Sequential Demo",
+
+  "sequence": [
+    "INIT",
+    "INIT",
+    "AVG_N",
+    "CONST",
+    "GT",
+    "WRITE"
+  ]
+}
