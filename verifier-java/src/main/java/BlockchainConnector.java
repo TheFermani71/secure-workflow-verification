@@ -265,4 +265,22 @@ public class BlockchainConnector {
             e.printStackTrace();
         }
     }
+
+    /*
+     * Cleanup resources
+     */
+    public void close() {
+
+        try {
+
+            if (web3 != null) {
+
+                web3.shutdown();
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+    }
 }

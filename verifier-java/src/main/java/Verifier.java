@@ -157,6 +157,11 @@ public class Verifier {
                 result
         );
 
+        /*
+         * Cleanup blockchain resources
+         */
+        blockchainConnector.close();
+
         return result;
     }
 }

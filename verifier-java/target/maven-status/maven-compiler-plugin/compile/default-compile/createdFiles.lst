@@ -4,6 +4,7 @@ TraceParser.class
 WorkflowVerifierReader$7.class
 WorkflowNavigator.class
 WorkflowVerifierReader$2.class
+WorkflowMetrics.class
 WorkflowVerifierReader$8.class
 WorkflowLoader.class
 VerificationRecord.class

@@ -37,6 +37,21 @@ public class WorkflowPathValidator {
                 "========================================"
         );
 
+        WorkflowMetrics metrics =
+                new WorkflowMetrics(
+                        graph
+                );
+
+        metrics.printAnalysis();
+
+        if (
+                mode ==
+                       ValidationMode.COROUTINE_AWARE
+        ) {
+
+            metrics.printCoroutineAnalysis();
+        }
+
         System.out.println(
                 " BEHAVIORAL WORKFLOW VALIDATION"
         );
