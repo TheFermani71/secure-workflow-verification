@@ -505,4 +505,133 @@ contract WorkflowVerifier {
 
             traceHashToMerkleRoot[traceHash];
     }
+
+    // ============================================================
+    // MERKLE AUDIT LAYER
+    // ============================================================
+
+    event MerkleProofVerified(
+
+        bytes32 leaf,
+
+        bytes32 root,
+
+        bool valid
+    );
+
+    function verifyMerkleProof(
+
+        bytes32 leaf,
+
+        bytes32[] memory proof,
+
+        bool[] memory directions,
+
+        bytes32 root
+    )
+
+        public
+
+        returns (bool)
+    {
+
+        require(
+
+            proof.length == directions.length,
+
+            "Invalid proof"
+        );
+
+        bytes32 current = leaf;
+
+        for (
+
+            uint256 i = 0;
+
+            i < proof.length;
+
+            i++
+        ) {
+
+            if (directions[i]) {
+
+                current = sha256(
+
+                    abi.encodePacked(
+
+                        proof[i],
+
+                        current
+                    )
+                );
+
+            } else {
+
+                current = sha256(
+
+                    abi.encodePacked(
+
+                        current,
+
+                        proof[i]
+                    )
+                );
+            }
+        }
+
+        bool valid =
+
+            current == root;
+
+        emit MerkleProofVerified(
+
+            leaf,
+
+            root,
+
+            valid
+        );
+
+        return valid;
+    }
+
+    function verifyTraceMembership(
+
+        string memory traceHash,
+
+        bytes32 leaf,
+
+        bytes32[] memory proof,
+
+        bool[] memory directions,
+
+        bytes32 root
+    )
+
+        public
+
+        returns (bool)
+    {
+
+        require(
+
+            registeredTraceHashes[traceHash],
+
+            "Trace not registered"
+        );
+
+        return
+
+            verifyMerkleProof(
+
+                leaf,
+
+                proof,
+
+                directions,
+
+                root
+            );
+    }
+
 }
