@@ -1,5 +1,6 @@
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/TraceParser.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/MerkleProof.java
+/home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/MerkleAuditExporter.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/ApiTimingValidator.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/TestVerifier.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/BlockchainConnector.java

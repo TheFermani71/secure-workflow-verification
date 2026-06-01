@@ -5,6 +5,7 @@ WorkflowVerifierReader$5.class
 TraceParser.class
 WorkflowVerifierReader$7.class
 BlockchainConnector$1.class
+MerkleAuditExporter.class
 WorkflowNavigator.class
 WorkflowRegistrar.class
 WorkflowVerifierReader$2.class
