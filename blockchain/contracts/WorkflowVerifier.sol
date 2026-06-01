@@ -4,6 +4,46 @@ pragma solidity ^0.8.19;
 
 contract WorkflowVerifier {
 
+    // ============================================================
+    // WORKFLOW REGISTRY
+    // ============================================================
+
+    struct Workflow {
+
+        string workflowHash;
+
+        string workflowName;
+
+        string workflowVersion;
+
+        uint256 registeredAt;
+
+        bool active;
+    }
+
+    Workflow[] public workflows;
+
+    mapping(string => bool)
+        public registeredWorkflows;
+
+    mapping(string => Workflow)
+        private workflowRegistry;
+
+    event WorkflowRegistered(
+
+        string workflowHash,
+
+        string workflowName,
+
+        string workflowVersion,
+
+        uint256 timestamp
+    );
+
+    // ============================================================
+    // VERIFICATION REGISTRY
+    // ============================================================
+
     struct VerificationRecord {
 
         string deviceId;
@@ -33,15 +73,17 @@ contract WorkflowVerifier {
     /*
      * Replay protection
      */
-    mapping(string => bool) public registeredTraceHashes;
+    mapping(string => bool)
+        public registeredTraceHashes;
 
     /*
      * Consistency protection
      */
-    mapping(string => string) public traceHashToMerkleRoot;
+    mapping(string => string)
+        public traceHashToMerkleRoot;
 
     /*
-     * Event
+     * Verification event
      */
     event VerificationStored(
 
@@ -64,9 +106,166 @@ contract WorkflowVerifier {
         uint256 timestamp
     );
 
+    // ============================================================
+    // WORKFLOW REGISTRATION
+    // ============================================================
+
+    function registerWorkflow(
+
+        string memory workflowHash,
+
+        string memory workflowName,
+
+        string memory workflowVersion
+    )
+
+        public
+    {
+
+        require(
+
+            bytes(workflowHash).length > 0,
+
+            "Invalid workflow hash"
+        );
+
+        require(
+
+            bytes(workflowName).length > 0,
+
+            "Invalid workflow name"
+        );
+
+        require(
+
+            bytes(workflowVersion).length > 0,
+
+            "Invalid workflow version"
+        );
+
+        require(
+
+            !registeredWorkflows[workflowHash],
+
+            "Workflow already registered"
+        );
+
+        Workflow memory wf =
+
+            Workflow(
+
+                workflowHash,
+
+                workflowName,
+
+                workflowVersion,
+
+                block.timestamp,
+
+                true
+            );
+
+        workflows.push(wf);
+
+        workflowRegistry[workflowHash] = wf;
+
+        registeredWorkflows[workflowHash] = true;
+
+        emit WorkflowRegistered(
+
+            workflowHash,
+
+            workflowName,
+
+            workflowVersion,
+
+            block.timestamp
+        );
+    }
+
     /*
-     * Store verification
+     * Check workflow registration
      */
+    function isWorkflowRegistered(
+
+        string memory workflowHash
+    )
+
+        public
+
+        view
+
+        returns (bool)
+    {
+
+        return
+
+            registeredWorkflows[workflowHash];
+    }
+
+    /*
+     * Read workflow
+     */
+    function getWorkflow(
+
+        string memory workflowHash
+    )
+
+        public
+
+        view
+
+        returns (
+
+            string memory,
+
+            string memory,
+
+            string memory,
+
+            uint256,
+
+            bool
+        )
+    {
+
+        Workflow memory wf =
+
+            workflowRegistry[workflowHash];
+
+        return (
+
+            wf.workflowHash,
+
+            wf.workflowName,
+
+            wf.workflowVersion,
+
+            wf.registeredAt,
+
+            wf.active
+        );
+    }
+
+    /*
+     * Number of registered workflows
+     */
+    function getWorkflowCount()
+
+        public
+
+        view
+
+        returns (uint256)
+    {
+
+        return workflows.length;
+    }
+
+    // ============================================================
+    // VERIFICATION STORAGE
+    // ============================================================
+
     function storeVerification(
 
         string memory deviceId,
@@ -122,6 +321,16 @@ contract WorkflowVerifier {
             traceLength > 0,
 
             "Invalid trace length"
+        );
+
+        /*
+         * Workflow Registry enforcement
+         */
+        require(
+
+            registeredWorkflows[workflowHash],
+
+            "Workflow not registered"
         );
 
         /*
@@ -190,9 +399,10 @@ contract WorkflowVerifier {
         );
     }
 
-    /*
-     * Number of records
-     */
+    // ============================================================
+    // AUDIT API
+    // ============================================================
+
     function getRecordCount()
 
         public
@@ -205,9 +415,6 @@ contract WorkflowVerifier {
         return records.length;
     }
 
-    /*
-     * Read verification
-     */
     function getRecord(
 
         uint256 index
@@ -265,9 +472,6 @@ contract WorkflowVerifier {
         );
     }
 
-    /*
-     * Check if trace hash exists
-     */
     function isTraceRegistered(
 
         string memory traceHash
@@ -285,9 +489,6 @@ contract WorkflowVerifier {
             registeredTraceHashes[traceHash];
     }
 
-    /*
-     * Get Merkle Root associated
-     */
     function getMerkleRoot(
 
         string memory traceHash

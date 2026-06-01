@@ -2,7 +2,9 @@ ComplexityMetadata.class
 WorkflowVerifierReader$5.class
 TraceParser.class
 WorkflowVerifierReader$7.class
+BlockchainConnector$1.class
 WorkflowNavigator.class
+WorkflowRegistrar.class
 WorkflowVerifierReader$2.class
 WorkflowMetrics.class
 WorkflowVerifierReader$8.class
