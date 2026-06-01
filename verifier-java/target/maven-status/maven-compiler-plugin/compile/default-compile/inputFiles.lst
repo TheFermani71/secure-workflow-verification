@@ -1,4 +1,5 @@
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/TraceParser.java
+/home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/MerkleProof.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/ApiTimingValidator.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/TestVerifier.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/BlockchainConnector.java
@@ -11,7 +12,9 @@
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/WorkflowRegistrar.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/GraphEdge.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/WorkflowNavigator.java
+/home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/MerkleProofVerifier.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/Verifier.java
+/home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/MerkleTreeBuilder.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/ValidationMode.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/TraceIntegrityValidator.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/GraphNode.java
@@ -21,5 +24,8 @@
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/WorkflowGraph.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/HashChainUtils.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/VerificationResult.java
+/home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/MerkleTree.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/GapTimingValidator.java
+/home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/MerkleProofNode.java
+/home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/TestMerkle.java
 /home/emanuel/work/secure-workflow-verification/verifier-java/src/main/java/WorkflowMetrics.java

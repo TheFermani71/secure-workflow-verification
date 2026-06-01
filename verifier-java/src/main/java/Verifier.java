@@ -108,8 +108,34 @@ public class Verifier {
         long traceLength =
                 trace.entries.size();
 
+        /*
+         * Phase 2:
+         * Build a real Merkle Root
+         * from trace entry hashes.
+         */
         String traceMerkleRoot =
-                trace.traceMerkleRoot;
+                MerkleTreeBuilder.computeRoot(
+                        trace
+                );
+
+        System.out.println();
+
+        System.out.println(
+                "========================================"
+        );
+
+        System.out.println(
+                " MERKLE LAYER"
+        );
+
+        System.out.println(
+                "========================================"
+        );
+
+        System.out.println(
+                "Computed Root : "
+                        + traceMerkleRoot
+        );
 
         VerificationResult result =
                 new VerificationResult(

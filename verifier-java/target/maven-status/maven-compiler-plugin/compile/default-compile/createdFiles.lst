@@ -1,3 +1,5 @@
+MerkleProof.class
+MerkleProofVerifier.class
 ComplexityMetadata.class
 WorkflowVerifierReader$5.class
 TraceParser.class
@@ -11,6 +13,7 @@ WorkflowVerifierReader$8.class
 WorkflowLoader.class
 VerificationRecord.class
 WorkflowVerifierReader$3.class
+MerkleProofNode.class
 BlockchainConnector.class
 TraceEntry.class
 ValidationMode.class
@@ -27,11 +30,14 @@ WorkflowVerifierReader$10.class
 Verifier.class
 VerificationResult.class
 HashUtils.class
+MerkleTree.class
 WorkflowPathValidator$1.class
 ApiTimingValidator.class
 WorkflowVerifierReader$1.class
+TestMerkle.class
 WorkflowVerifierReader$4.class
 TestVerifier.class
 GraphNode.class
 TraceIntegrityValidator.class
 WorkflowVerifierReader$9.class
+MerkleTreeBuilder.class
